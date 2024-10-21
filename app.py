@@ -54,10 +54,10 @@ if 'YearBuilt' in df_pivot.columns:
 
 # Add new feature for total square footage if the relevant columns exist
 required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
-if all(col in df_pivot.columns for col in required_columns):
-    df_pivot['TotalSF'] = df_pivot['1stFlrSF'] + df_pivot['2ndFlrSF'] + df_pivot['TotalBsmtSF']
+if all(col in df.columns for col in required_columns):
+    df['TotalSF'] = df['1stFlrSF'] + df['2ndFlrSF'] + df['TotalBsmtSF']
 else:
-    print("One or more required columns are missing for TotalSF calculation.")
+    print("Required columns for TotalSF calculation are missing from the original DataFrame.")
 
 # Specify features and target variable
 X = df_pivot[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
