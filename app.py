@@ -27,20 +27,24 @@ def clean_data(df):
     logging.info(f"Initial DataFrame shape: {df.shape}")
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
-    # Check if required columns exist in the DataFrame
+    # Check if 'Value' column exists
+    if 'Value' not in df.columns:
+        logging.error("Column 'Value' is missing from the DataFrame.")
+        raise KeyError("Column 'Value' is missing from the DataFrame.")
+
+    # Check for required columns in the DataFrame
     required_vars = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
     for col in required_vars:
         if col not in df['Variable'].values:
             logging.warning(f"Column {col} is missing from the DataFrame.")
-
+    
     # Ensure the required numeric columns are present and convert to numeric
     for col in required_vars:
         if col in df['Variable'].values:
             df.loc[df['Variable'] == col, 'Value'] = pd.to_numeric(df.loc[df['Variable'] == col, 'Value'], errors='coerce')
 
-    # Check if all required columns for TotalSF calculation are present
+    # Calculate TotalSF if required variables are present
     if all(var in df['Variable'].values for var in required_vars):
-        # Calculate TotalSF by summing the respective values
         first_flr_sf = df.loc[df['Variable'] == '1stFlrSF', 'Value'].fillna(0).values[0]
         second_flr_sf = df.loc[df['Variable'] == '2ndFlrSF', 'Value'].fillna(0).values[0]
         total_bsmt_sf = df.loc[df['Variable'] == 'TotalBsmtSF', 'Value'].fillna(0).values[0]
