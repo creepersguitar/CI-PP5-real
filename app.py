@@ -20,8 +20,9 @@ df = pd.read_csv(file_path)
 df.columns = df.columns.str.strip()
 
 # Check the structure of the DataFrame
-print("Initial DataFrame preview:\n", df.head())
-print("Initial DataFrame columns:", df.columns)
+st.write("### Initial DataFrame Preview")
+st.dataframe(df.head())
+st.write("Initial DataFrame columns:", df.columns)
 
 # Check if the data is in a pivoted format (metadata-style)
 if 'Variable' in df.columns:
@@ -31,11 +32,11 @@ if 'Variable' in df.columns:
         # Reset index if needed
         df_pivot.reset_index(drop=True, inplace=True)
         df = df_pivot  # Update df to the pivoted DataFrame
-        print("Data reshaped successfully.")
+        st.write("Data reshaped successfully.")
     else:
-        print("The 'Units' column is missing; unable to reshape data.")
+        st.write("The 'Units' column is missing; unable to reshape data.")
 else:
-    print("Data is not in a metadata format. Proceeding with the original DataFrame.")
+    st.write("Data is not in a metadata format. Proceeding with the original DataFrame.")
 
 # Verify if the required columns are present for TotalSF calculation
 required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
@@ -44,38 +45,39 @@ missing_columns = [col for col in required_columns if col not in df.columns]
 if not missing_columns:
     # Calculate TotalSF
     df['TotalSF'] = df['1stFlrSF'] + df['2ndFlrSF'] + df['TotalBsmtSF']
-    print("TotalSF column successfully created.")
+    st.write("TotalSF column successfully created.")
 else:
-    print(f"The following required columns are missing for TotalSF calculation: {missing_columns}")
+    st.write(f"The following required columns are missing for TotalSF calculation: {missing_columns}")
 
 # Convert categorical features to numeric if needed
 if 'OverallQual' in df.columns and df['OverallQual'].dtype == 'object':
-    print("Unique values in OverallQual before encoding:", df['OverallQual'].unique())
+    st.write("Unique values in OverallQual before encoding:", df['OverallQual'].unique())
     le = LabelEncoder()
     df['OverallQual'] = le.fit_transform(df['OverallQual'])
 
 # Clean the YearBuilt column if necessary
 if 'YearBuilt' in df.columns:
-    print("Unique values in YearBuilt before cleaning:", df['YearBuilt'].unique())
+    st.write("Unique values in YearBuilt before cleaning:", df['YearBuilt'].unique())
     df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0], errors='coerce')
-    print("Unique values in YearBuilt after cleaning:", df['YearBuilt'].unique())
+    st.write("Unique values in YearBuilt after cleaning:", df['YearBuilt'].unique())
 
-# Fill missing values with the median
-df.fillna(df.median(), inplace=True)
+# Fill missing values with the median for numeric columns
+numeric_cols = df.select_dtypes(include=[np.number]).columns
+df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 
 # Specify features and target variable if TotalSF exists
 if 'TotalSF' in df.columns:
     X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
     y = df['SalePrice']
 else:
-    print("TotalSF column is not available. Skipping related operations.")
+    st.write("TotalSF column is not available. Skipping related operations.")
     # Use a subset of features that are available
     available_columns = [col for col in ['OverallQual', 'GarageArea', 'YearBuilt'] if col in df.columns]
     if 'SalePrice' in df.columns and available_columns:
         X = df[available_columns]
         y = df['SalePrice']
     else:
-        print("Insufficient data for model training. Exiting.")
+        st.write("Insufficient data for model training. Exiting.")
         X, y = None, None
 
 # Proceed if X and y are valid
@@ -145,5 +147,7 @@ if X is not None and y is not None:
         rmse = np.sqrt(mean_squared_error(y_test, y_pred_rf))
         st.write(f"### Random Forest R²: {r2:.4f}")
         st.write(f"### Random Forest RMSE: {rmse:.2f}")
+    else:
+        st.write("No sufficient data for model training.")
 else:
     st.write("No sufficient data for model training.")
