@@ -43,9 +43,10 @@ st.write("### DataFrame Shape and Columns After Reshaping")
 st.write(f"Shape: {df.shape}")
 st.write("Columns:", df.columns)
 
-# Ensure the relevant columns are numeric
-for col in ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']:
-    df[col] = pd.to_numeric(df[col], errors='coerce')  # Convert to numeric, coerce errors to NaN
+# Convert relevant columns to numeric types, handling errors
+numeric_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'GarageArea', 'SalePrice', 'YearBuilt']
+for col in numeric_columns:
+    df[col] = pd.to_numeric(df[col], errors='coerce')  # Convert to numeric, coercing errors to NaN
 
 # Verify if the required columns are present for TotalSF calculation
 required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'SalePrice', 'GarageArea', 'OverallQual', 'YearBuilt']
