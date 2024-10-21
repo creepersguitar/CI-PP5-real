@@ -161,5 +161,7 @@ if X is not None and y is not None:
         rmse = np.sqrt(mean_squared_error(y_test, y_pred_rf))
         st.write(f"### Random Forest R²: {r2:.4f}")
         st.write(f"### Random Forest RMSE: {rmse:.2f}")
+    else:
+        st.write("No sufficient data for model training.")
 else:
     st.write("No sufficient data for model training.")
