@@ -8,7 +8,6 @@ import plotly.express as px
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.preprocessing import LabelEncoder
 import logging
 
 # Set up logging
@@ -27,7 +26,7 @@ def clean_data(df):
     logging.info(f"Initial DataFrame shape: {df.shape}")
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
-    # Check if 'Value' column exists
+    # Check if 'Units' column exists
     if 'Units' not in df.columns:
         logging.error("Column 'Units' is missing from the DataFrame.")
         raise KeyError("Column 'Units' is missing from the DataFrame.")
@@ -102,9 +101,16 @@ def main():
     # Clean the data
     df = clean_data(df)
 
+    # Reshape the DataFrame so 'Variable' values become columns
+    df_pivot = df.pivot(index=None, columns='Variable', values='Units').reset_index(drop=True)
+    
+    # Log the reshaped DataFrame
+    logging.info(f"DataFrame after reshaping: {df_pivot.shape}")
+    logging.info(f"Columns after reshaping: {df_pivot.columns.tolist()}")
+
     # Check for critical columns after cleaning
     required_columns = ['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']
-    missing_columns = [col for col in required_columns if col not in df['Variable'].values]
+    missing_columns = [col for col in required_columns if col not in df_pivot.columns]
     
     if missing_columns:
         st.write(f"Missing critical columns: {missing_columns}. Please check the data.")
@@ -112,33 +118,33 @@ def main():
         return  # Exit if critical columns are missing
 
     # Log the DataFrame shape and columns
-    logging.info(f"DataFrame shape after cleaning: {df.shape}")
-    logging.info(f"Columns available: {df['Variable'].unique()}")
+    logging.info(f"DataFrame shape after reshaping: {df_pivot.shape}")
+    logging.info(f"Columns available: {df_pivot.columns.tolist()}")
 
     # Check for NaN values in critical columns
     st.write("### Check for NaN Values After Cleaning")
-    nan_counts = df[required_columns].isnull().sum()
+    nan_counts = df_pivot[required_columns].isnull().sum()
     st.write("NaN Counts in Important Columns:")
     st.write(nan_counts)
 
     # Fill NaN values
-    df.fillna({
-        'TotalSF': df.loc[df['Variable'] == 'TotalSF', 'Units'].median(),
-        'OverallQual': df.loc[df['Variable'] == 'OverallQual', 'Units'].mode()[0],
-        'GarageArea': df.loc[df['Variable'] == 'GarageArea', 'Units'].median(),
-        'YearBuilt': df.loc[df['Variable'] == 'YearBuilt', 'Units'].median(),
-        'SalePrice': df.loc[df['Variable'] == 'SalePrice', 'Units'].median()
+    df_pivot.fillna({
+        'TotalSF': df_pivot['TotalSF'].median(),
+        'OverallQual': df_pivot['OverallQual'].mode()[0],
+        'GarageArea': df_pivot['GarageArea'].median(),
+        'YearBuilt': df_pivot['YearBuilt'].median(),
+        'SalePrice': df_pivot['SalePrice'].median()
     }, inplace=True)
 
     # Re-check for NaN values after filling
-    nan_counts_after = df[required_columns].isnull().sum()
+    nan_counts_after = df_pivot[required_columns].isnull().sum()
     st.write("NaN Counts in Important Columns After Filling:")
     st.write(nan_counts_after)
 
     # Proceed if critical columns are filled
-    if df[['GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum().sum() == 0:
-        X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
-        y = df['SalePrice']
+    if df_pivot[required_columns].isnull().sum().sum() == 0:
+        X = df_pivot[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
+        y = df_pivot['SalePrice']
     else:
         st.write("Still have NaN values in critical columns. Exiting.")
         X, y = None, None
@@ -148,7 +154,7 @@ def main():
         model, X_test, y_test = train_model(X, y)
 
         # Visualize the data
-        visualize_data(df)
+        visualize_data(df_pivot)
 
         # Model Evaluation
         st.subheader("Model Evaluation")
