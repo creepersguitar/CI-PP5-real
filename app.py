@@ -21,7 +21,7 @@ df.columns = df.columns.str.strip()
 
 # Check the structure of the DataFrame
 st.write("### Initial DataFrame Preview")
-st.dataframe(df.head())
+st.dataframe(df.head())  # Use Streamlit to display the DataFrame
 st.write("Initial DataFrame columns:", df.columns)
 
 # Check if the data is in a pivoted format (metadata-style)
@@ -58,7 +58,7 @@ if 'OverallQual' in df.columns and df['OverallQual'].dtype == 'object':
 # Clean the YearBuilt column if necessary
 if 'YearBuilt' in df.columns:
     st.write("Unique values in YearBuilt before cleaning:", df['YearBuilt'].unique())
-    df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0], errors='coerce')
+    df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
     st.write("Unique values in YearBuilt after cleaning:", df['YearBuilt'].unique())
 
 # Fill missing values with the median for numeric columns
