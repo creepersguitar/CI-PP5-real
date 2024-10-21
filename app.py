@@ -28,9 +28,9 @@ def clean_data(df):
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
     # Check if 'Value' column exists
-    #if 'Value' not in df.columns:
-    #    logging.error("Column 'Value' is missing from the DataFrame.")
-    #    raise KeyError("Column 'Value' is missing from the DataFrame.")
+    if 'Units' not in df.columns:
+        logging.error("Column 'Units' is missing from the DataFrame.")
+        raise KeyError("Column 'Units' is missing from the DataFrame.")
 
     # Check for required columns in the DataFrame
     required_vars = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
@@ -41,7 +41,7 @@ def clean_data(df):
     # Ensure the required numeric columns are present and convert to numeric
     for col in required_vars:
         if col in df['Variable'].values:
-            df.loc[df['Variable'] == col, 'Value'] = pd.to_numeric(df.loc[df['Variable'] == col, 'Value'], errors='coerce')
+            df.loc[df['Variable'] == col, 'Units'] = pd.to_numeric(df.loc[df['Variable'] == col, 'Units'], errors='coerce')
 
     # Calculate TotalSF if required variables are present
     if all(var in df['Variable'].values for var in required_vars):
