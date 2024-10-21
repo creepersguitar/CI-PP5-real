@@ -66,16 +66,22 @@ if 'YearBuilt' in df.columns:
     df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
     st.write("Unique values in YearBuilt after cleaning:", df['YearBuilt'].unique())
 
+# Check for NaN values in the necessary columns
+st.write("### Check for NaN Values")
+nan_counts = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum()
+st.write("NaN Counts in Important Columns:")
+st.write(nan_counts)
+
 # Fill missing values with the median for numeric columns
 numeric_cols = df.select_dtypes(include=[np.number]).columns
 df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 
 # Check for SalePrice and other features
-if 'TotalSF' in df.columns:
+if 'TotalSF' in df.columns and 'SalePrice' in df.columns:
     X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
     y = df['SalePrice']
 else:
-    st.write("TotalSF column is not available. Skipping related operations.")
+    st.write("TotalSF or SalePrice column is not available. Skipping related operations.")
     # Use a subset of features that are available
     available_columns = [col for col in ['OverallQual', 'GarageArea', 'YearBuilt'] if col in df.columns]
     if 'SalePrice' in df.columns and available_columns:
@@ -152,7 +158,5 @@ if X is not None and y is not None:
         rmse = np.sqrt(mean_squared_error(y_test, y_pred_rf))
         st.write(f"### Random Forest R²: {r2:.4f}")
         st.write(f"### Random Forest RMSE: {rmse:.2f}")
-    else:
-        st.write("No sufficient data for model training.")
 else:
     st.write("No sufficient data for model training.")
