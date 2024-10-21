@@ -91,20 +91,20 @@ df.fillna({
     'SalePrice': df['SalePrice'].median()
 }, inplace=True)
 
-# Check if the columns still exist
-if 'TotalSF' in df.columns and 'SalePrice' in df.columns:
+# Re-check for NaN values after filling
+st.write("### Check for NaN Values After Filling")
+nan_counts_after = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum()
+st.write("NaN Counts in Important Columns After Filling:")
+st.write(nan_counts_after)
+
+# Proceed only if critical columns are filled
+if df[['GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum().sum() == 0:
+    # Define features and target
     X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
     y = df['SalePrice']
 else:
-    st.write("TotalSF or SalePrice column is not available. Skipping related operations.")
-    # Use a subset of features that are available
-    available_columns = [col for col in ['OverallQual', 'GarageArea', 'YearBuilt'] if col in df.columns]
-    if 'SalePrice' in df.columns and available_columns:
-        X = df[available_columns]
-        y = df['SalePrice']
-    else:
-        st.write("Insufficient data for model training. Exiting.")
-        X, y = None, None
+    st.write("Still have NaN values in critical columns. Exiting.")
+    X, y = None, None
 
 # Proceed if X and y are valid
 if X is not None and y is not None:
