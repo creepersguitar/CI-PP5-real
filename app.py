@@ -28,9 +28,9 @@ def clean_data(df):
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
     # Check if 'Value' column exists
-    if 'Value' not in df.columns:
-        logging.error("Column 'Value' is missing from the DataFrame.")
-        raise KeyError("Column 'Value' is missing from the DataFrame.")
+    #if 'Value' not in df.columns:
+    #    logging.error("Column 'Value' is missing from the DataFrame.")
+    #    raise KeyError("Column 'Value' is missing from the DataFrame.")
 
     # Check for required columns in the DataFrame
     required_vars = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
