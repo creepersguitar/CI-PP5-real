@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import LabelEncoder
 
@@ -24,6 +23,20 @@ df.columns = df.columns.str.strip()
 print("Initial DataFrame preview:\n", df.head())
 print("Initial DataFrame columns:", df.columns)
 
+# Check if the data is in a pivoted format (metadata-style)
+if 'Variable' in df.columns:
+    # Pivot the DataFrame to get features as columns
+    if 'Units' in df.columns:
+        df_pivot = df.pivot(index=None, columns='Variable', values='Units')
+        # Reset index if needed
+        df_pivot.reset_index(drop=True, inplace=True)
+        df = df_pivot  # Update df to the pivoted DataFrame
+        print("Data reshaped successfully.")
+    else:
+        print("The 'Units' column is missing; unable to reshape data.")
+else:
+    print("Data is not in a metadata format. Proceeding with the original DataFrame.")
+
 # Verify if the required columns are present for TotalSF calculation
 required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
 missing_columns = [col for col in required_columns if col not in df.columns]
@@ -34,9 +47,6 @@ if not missing_columns:
     print("TotalSF column successfully created.")
 else:
     print(f"The following required columns are missing for TotalSF calculation: {missing_columns}")
-
-# Check if 'TotalSF' is successfully created
-print("Columns in the DataFrame:", df.columns)
 
 # Convert categorical features to numeric if needed
 if 'OverallQual' in df.columns and df['OverallQual'].dtype == 'object':
@@ -70,17 +80,9 @@ else:
 
 # Proceed if X and y are valid
 if X is not None and y is not None:
-    # Check the shapes of X and y before proceeding
-    print("Shape of X before NaN handling:", X.shape)
-    print("Shape of y before NaN handling:", y.shape)
-
     # Handle NaN values
     X = X.dropna()
     y = y[X.index]  # Align y with X after dropping
-
-    # Check the shape after dropping NaNs
-    print("Shape of X after NaN handling:", X.shape)
-    print("Shape of y after NaN handling:", y.shape)
 
     # Split into training and testing datasets
     if X.shape[0] > 0 and y.shape[0] > 0:
