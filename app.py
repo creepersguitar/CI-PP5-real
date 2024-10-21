@@ -38,8 +38,13 @@ if 'Variable' in df.columns:
 else:
     st.write("Data is not in a metadata format. Proceeding with the original DataFrame.")
 
+# Check the DataFrame shape and columns after reshaping
+st.write("### DataFrame Shape and Columns After Reshaping")
+st.write(f"Shape: {df.shape}")
+st.write("Columns:", df.columns)
+
 # Verify if the required columns are present for TotalSF calculation
-required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
+required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'SalePrice']
 missing_columns = [col for col in required_columns if col not in df.columns]
 
 if not missing_columns:
@@ -65,7 +70,7 @@ if 'YearBuilt' in df.columns:
 numeric_cols = df.select_dtypes(include=[np.number]).columns
 df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 
-# Specify features and target variable if TotalSF exists
+# Check for SalePrice and other features
 if 'TotalSF' in df.columns:
     X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
     y = df['SalePrice']
