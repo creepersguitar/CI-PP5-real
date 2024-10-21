@@ -24,11 +24,15 @@ def load_data(file_path):
 def clean_data(df):
     numeric_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'GarageArea', 'SalePrice', 'YearBuilt']
     
+    # Convert numeric columns
     for col in numeric_columns:
         try:
             df[col] = pd.to_numeric(df[col], errors='coerce')  # Convert to numeric, coercing errors to NaN
         except Exception as e:
             logging.error(f"Error converting {col}: {e}")
+
+    # Log current columns after conversion
+    logging.info(f"Columns after conversion: {df.columns.tolist()}")
 
     # Calculate TotalSF if required columns are present
     required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
@@ -42,10 +46,15 @@ def clean_data(df):
     if 'OverallQual' in df.columns and df['OverallQual'].dtype == 'object':
         le = LabelEncoder()
         df['OverallQual'] = le.fit_transform(df['OverallQual'])
-    
+        logging.info("OverallQual column encoded.")
+
     # Clean YearBuilt column
     if 'YearBuilt' in df.columns:
         df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
+        logging.info("YearBuilt column cleaned.")
+
+    # Log final columns after cleaning
+    logging.info(f"Columns after cleaning: {df.columns.tolist()}")
     
     return df
 
