@@ -43,6 +43,10 @@ st.write("### DataFrame Shape and Columns After Reshaping")
 st.write(f"Shape: {df.shape}")
 st.write("Columns:", df.columns)
 
+# Ensure the relevant columns are numeric
+for col in ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']:
+    df[col] = pd.to_numeric(df[col], errors='coerce')  # Convert to numeric, coerce errors to NaN
+
 # Verify if the required columns are present for TotalSF calculation
 required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'SalePrice', 'GarageArea', 'OverallQual', 'YearBuilt']
 missing_columns = [col for col in required_columns if col not in df.columns]
@@ -73,7 +77,7 @@ st.write("NaN Counts in Important Columns:")
 st.write(nan_counts)
 
 # Fill or drop NaN values in critical columns
-# Filling NaN values with median for numerical columns
+# Filling NaN values with median for numerical columns and mode for categorical
 df.fillna({
     'TotalSF': df['TotalSF'].median(),
     'OverallQual': df['OverallQual'].mode()[0],  # Fill with mode for categorical
