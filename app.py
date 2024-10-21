@@ -20,7 +20,6 @@ def load_data(file_path):
     logging.info(f"Loaded data with columns: {df.columns.tolist()}")
     return df
 
-# Function to clean the data
 def clean_data(df):
     # Log initial DataFrame shape and columns
     logging.info(f"Initial DataFrame shape: {df.shape}")
@@ -30,6 +29,21 @@ def clean_data(df):
     if 'Units' not in df.columns:
         logging.error("Column 'Units' is missing from the DataFrame.")
         raise KeyError("Column 'Units' is missing from the DataFrame.")
+
+    # Handle non-numeric entries in 'Units' column
+    def convert_to_numeric(value):
+        try:
+            # If the value is a range like "0 - 1418", split and take the average
+            if '-' in str(value):
+                start, end = map(float, value.split('-'))
+                return (start + end) / 2
+            # Otherwise, try converting directly to float
+            return float(value)
+        except ValueError:
+            return np.nan
+
+    # Apply the conversion function to the 'Units' column
+    df['Units'] = df['Units'].apply(convert_to_numeric)
 
     # Check for required columns in the DataFrame
     required_vars = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
@@ -61,6 +75,7 @@ def clean_data(df):
     logging.info(f"Columns after cleaning: {df['Variable'].unique()}")
 
     return df
+
 
 # Function to visualize data
 def visualize_data(df):
