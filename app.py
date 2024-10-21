@@ -24,6 +24,10 @@ def load_data(file_path):
 def clean_data(df):
     numeric_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'GarageArea', 'SalePrice', 'YearBuilt']
     
+    # Log initial DataFrame shape and columns
+    logging.info(f"Initial DataFrame shape: {df.shape}")
+    logging.info(f"Initial columns: {df.columns.tolist()}")
+
     # Convert numeric columns
     for col in numeric_columns:
         try:
@@ -42,20 +46,23 @@ def clean_data(df):
     else:
         logging.warning("Required columns for TotalSF calculation are missing.")
     
-    # Convert categorical features to numeric
+    # Convert OverallQual to numeric if it exists
     if 'OverallQual' in df.columns and df['OverallQual'].dtype == 'object':
         le = LabelEncoder()
         df['OverallQual'] = le.fit_transform(df['OverallQual'])
         logging.info("OverallQual column encoded.")
+    
+    # Log columns after processing OverallQual
+    logging.info(f"Columns after processing OverallQual: {df.columns.tolist()}")
 
     # Clean YearBuilt column
     if 'YearBuilt' in df.columns:
         df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
         logging.info("YearBuilt column cleaned.")
-
+    
     # Log final columns after cleaning
     logging.info(f"Columns after cleaning: {df.columns.tolist()}")
-    
+
     return df
 
 # Function to visualize data
@@ -63,8 +70,9 @@ def visualize_data(df):
     st.subheader("Exploratory Data Analysis")
 
     # Distribution of SalePrice
-    fig = px.histogram(df, x='SalePrice', title='Sale Price Distribution')
-    st.plotly_chart(fig)
+    if 'SalePrice' in df.columns:
+        fig = px.histogram(df, x='SalePrice', title='Sale Price Distribution')
+        st.plotly_chart(fig)
 
     # Correlation Heatmap
     numeric_df = df.select_dtypes(include=[np.number])
@@ -104,6 +112,10 @@ def main():
         st.write(f"Missing critical columns: {missing_columns}. Please check the data.")
         logging.warning(f"Missing critical columns: {missing_columns}")
         return  # Exit if critical columns are missing
+
+    # Log the DataFrame shape and columns
+    logging.info(f"DataFrame shape after cleaning: {df.shape}")
+    logging.info(f"Columns available: {df.columns.tolist()}")
 
     # Check for NaN values in critical columns
     st.write("### Check for NaN Values After Cleaning")
