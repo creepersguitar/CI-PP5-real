@@ -87,9 +87,18 @@ def main():
     # Clean the data
     df = clean_data(df)
 
+    # Check for critical columns after cleaning
+    required_columns = ['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    
+    if missing_columns:
+        st.write(f"Missing critical columns: {missing_columns}. Please check the data.")
+        logging.warning(f"Missing critical columns: {missing_columns}")
+        return  # Exit if critical columns are missing
+
     # Check for NaN values in critical columns
     st.write("### Check for NaN Values After Cleaning")
-    nan_counts = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum()
+    nan_counts = df[required_columns].isnull().sum()
     st.write("NaN Counts in Important Columns:")
     st.write(nan_counts)
 
@@ -103,7 +112,7 @@ def main():
     }, inplace=True)
 
     # Re-check for NaN values after filling
-    nan_counts_after = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum()
+    nan_counts_after = df[required_columns].isnull().sum()
     st.write("NaN Counts in Important Columns After Filling:")
     st.write(nan_counts_after)
 
