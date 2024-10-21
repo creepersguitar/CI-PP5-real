@@ -45,14 +45,14 @@ def clean_data(df):
 
     # Calculate TotalSF if required variables are present
     if all(var in df['Variable'].values for var in required_vars):
-        first_flr_sf = df.loc[df['Variable'] == '1stFlrSF', 'Value'].fillna(0).values[0]
-        second_flr_sf = df.loc[df['Variable'] == '2ndFlrSF', 'Value'].fillna(0).values[0]
-        total_bsmt_sf = df.loc[df['Variable'] == 'TotalBsmtSF', 'Value'].fillna(0).values[0]
+        first_flr_sf = df.loc[df['Variable'] == '1stFlrSF', 'Units'].fillna(0).values[0]
+        second_flr_sf = df.loc[df['Variable'] == '2ndFlrSF', 'Units'].fillna(0).values[0]
+        total_bsmt_sf = df.loc[df['Variable'] == 'TotalBsmtSF', 'Units'].fillna(0).values[0]
 
         total_sf = first_flr_sf + second_flr_sf + total_bsmt_sf
         
         # Append TotalSF to DataFrame
-        df = df.append({'Variable': 'TotalSF', 'Value': total_sf}, ignore_index=True)
+        df = df.append({'Variable': 'TotalSF', 'Units': total_sf}, ignore_index=True)
         logging.info("TotalSF column created successfully.")
     else:
         logging.warning("Required variables for TotalSF calculation are missing.")
@@ -123,11 +123,11 @@ def main():
 
     # Fill NaN values
     df.fillna({
-        'TotalSF': df.loc[df['Variable'] == 'TotalSF', 'Value'].median(),
-        'OverallQual': df.loc[df['Variable'] == 'OverallQual', 'Value'].mode()[0],
-        'GarageArea': df.loc[df['Variable'] == 'GarageArea', 'Value'].median(),
-        'YearBuilt': df.loc[df['Variable'] == 'YearBuilt', 'Value'].median(),
-        'SalePrice': df.loc[df['Variable'] == 'SalePrice', 'Value'].median()
+        'TotalSF': df.loc[df['Variable'] == 'TotalSF', 'Units'].median(),
+        'OverallQual': df.loc[df['Variable'] == 'OverallQual', 'Units'].mode()[0],
+        'GarageArea': df.loc[df['Variable'] == 'GarageArea', 'Units'].median(),
+        'YearBuilt': df.loc[df['Variable'] == 'YearBuilt', 'Units'].median(),
+        'SalePrice': df.loc[df['Variable'] == 'SalePrice', 'Units'].median()
     }, inplace=True)
 
     # Re-check for NaN values after filling
