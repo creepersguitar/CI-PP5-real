@@ -76,20 +76,22 @@ if 'YearBuilt' in df.columns:
     st.write("Unique values in YearBuilt after cleaning:", df['YearBuilt'].unique())
 
 # Check for NaN values in the necessary columns
-st.write("### Check for NaN Values")
-nan_counts = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum()
-st.write("NaN Counts in Important Columns:")
-st.write(nan_counts)
+st.write("### Check for NaN Values Before Filling")
+nan_counts_before = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum()
+st.write("NaN Counts in Important Columns Before Filling:")
+st.write(nan_counts_before)
+
+# Check the data types of the relevant columns
+st.write("### Data Types of Relevant Columns")
+st.write(df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].dtypes)
 
 # Fill or drop NaN values in critical columns
 # Filling NaN values with median for numerical columns and mode for categorical
-df.fillna({
-    'TotalSF': df['TotalSF'].median(),
-    'OverallQual': df['OverallQual'].mode()[0],  # Fill with mode for categorical
-    'GarageArea': df['GarageArea'].median(),
-    'YearBuilt': df['YearBuilt'].median(),
-    'SalePrice': df['SalePrice'].median()
-}, inplace=True)
+df['TotalSF'] = df['TotalSF'].fillna(df['TotalSF'].median())
+df['OverallQual'] = df['OverallQual'].fillna(df['OverallQual'].mode()[0])  # Fill with mode for categorical
+df['GarageArea'] = df['GarageArea'].fillna(df['GarageArea'].median())
+df['YearBuilt'] = df['YearBuilt'].fillna(df['YearBuilt'].median())
+df['SalePrice'] = df['SalePrice'].fillna(df['SalePrice'].median())
 
 # Re-check for NaN values after filling
 st.write("### Check for NaN Values After Filling")
