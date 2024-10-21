@@ -27,53 +27,34 @@ def clean_data(df):
     logging.info(f"Initial DataFrame shape: {df.shape}")
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
-    # Check the DataFrame structure
-    if 'Variable' not in df.columns or 'Value' not in df.columns:
-        logging.error("DataFrame does not contain 'Variable' or 'Value' columns.")
-        return df  # Return as is; the data structure is not as expected
-
-    # Ensure the required numeric columns are present
-    numeric_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'GarageArea', 'SalePrice', 'YearBuilt']
-    for col in numeric_columns:
-        if col in df['Variable'].values:
-            # Convert to numeric, coercing errors to NaN
-            df.loc[df['Variable'] == col, 'Value'] = pd.to_numeric(df.loc[df['Variable'] == col, 'Value'], errors='coerce')
-            logging.info(f"Converted {col} to numeric.")
-        else:
+    # Check if required columns exist in the DataFrame
+    required_vars = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
+    for col in required_vars:
+        if col not in df['Variable'].values:
             logging.warning(f"Column {col} is missing from the DataFrame.")
 
-    # Calculate TotalSF if required variables are present
-    if all(col in df['Variable'].values for col in ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']):
-        total_flr_sf = (df.loc[df['Variable'] == '1stFlrSF', 'Value'].fillna(0).values +
-                        df.loc[df['Variable'] == '2ndFlrSF', 'Value'].fillna(0).values +
-                        df.loc[df['Variable'] == 'TotalBsmtSF', 'Value'].fillna(0).values)
+    # Ensure the required numeric columns are present and convert to numeric
+    for col in required_vars:
+        if col in df['Variable'].values:
+            df.loc[df['Variable'] == col, 'Value'] = pd.to_numeric(df.loc[df['Variable'] == col, 'Value'], errors='coerce')
+
+    # Check if all required columns for TotalSF calculation are present
+    if all(var in df['Variable'].values for var in required_vars):
+        # Calculate TotalSF by summing the respective values
+        first_flr_sf = df.loc[df['Variable'] == '1stFlrSF', 'Value'].fillna(0).values[0]
+        second_flr_sf = df.loc[df['Variable'] == '2ndFlrSF', 'Value'].fillna(0).values[0]
+        total_bsmt_sf = df.loc[df['Variable'] == 'TotalBsmtSF', 'Value'].fillna(0).values[0]
+
+        total_sf = first_flr_sf + second_flr_sf + total_bsmt_sf
         
-        # Add TotalSF to DataFrame
-        df = df.append({'Variable': 'TotalSF', 'Value': total_flr_sf}, ignore_index=True)
+        # Append TotalSF to DataFrame
+        df = df.append({'Variable': 'TotalSF', 'Value': total_sf}, ignore_index=True)
         logging.info("TotalSF column created successfully.")
     else:
         logging.warning("Required variables for TotalSF calculation are missing.")
-    
-    # Convert OverallQual to numeric if it exists
-    if 'OverallQual' in df['Variable'].values:
-        if df.loc[df['Variable'] == 'OverallQual', 'Value'].dtype == 'object':
-            le = LabelEncoder()
-            df.loc[df['Variable'] == 'OverallQual', 'Value'] = le.fit_transform(df.loc[df['Variable'] == 'OverallQual', 'Value'])
-            logging.info("OverallQual column encoded.")
-        else:
-            logging.info("OverallQual column is already numeric.")
-    
-    # Clean YearBuilt column
-    if 'YearBuilt' in df['Variable'].values:
-        df.loc[df['Variable'] == 'YearBuilt', 'Value'] = pd.to_numeric(
-            df.loc[df['Variable'] == 'YearBuilt', 'Value'].astype(str).str.split(' - ').str[0].str.replace(',', ''), 
-            errors='coerce'
-        )
-        logging.info("YearBuilt column cleaned.")
-    else:
-        logging.warning("YearBuilt column is missing from the DataFrame.")
-    
-    # Log final columns after cleaning
+
+    # Log the DataFrame after cleaning
+    logging.info(f"DataFrame shape after cleaning: {df.shape}")
     logging.info(f"Columns after cleaning: {df['Variable'].unique()}")
 
     return df
@@ -83,13 +64,12 @@ def visualize_data(df):
     st.subheader("Exploratory Data Analysis")
 
     # Distribution of SalePrice
-    if 'SalePrice' in df['Variable'].values:
-        sale_price_data = df.loc[df['Variable'] == 'SalePrice', 'Value']
-        fig = px.histogram(sale_price_data, title='Sale Price Distribution')
+    if 'SalePrice' in df.columns:
+        fig = px.histogram(df, x='SalePrice', title='Sale Price Distribution')
         st.plotly_chart(fig)
 
     # Correlation Heatmap
-    numeric_df = df.pivot(index='Variable', columns='Variable', values='Value').select_dtypes(include=[np.number])
+    numeric_df = df.select_dtypes(include=[np.number])
     if not numeric_df.empty:
         st.write("### Correlation Heatmap")
         fig, ax = plt.subplots(figsize=(10, 8))
@@ -115,17 +95,10 @@ def main():
     st.write("### Initial DataFrame Preview")
     st.dataframe(df.head())
 
-    # Check for required variables before cleaning
-    required_variables = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
-    missing_variables = [var for var in required_variables if var not in df['Variable'].values]
-    if missing_variables:
-        st.write(f"Missing required variables: {missing_variables}. Please check the data.")
-        return
-
     # Clean the data
     df = clean_data(df)
 
-    # Check for critical variables after cleaning
+    # Check for critical columns after cleaning
     required_columns = ['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']
     missing_columns = [col for col in required_columns if col not in df['Variable'].values]
     
@@ -140,23 +113,28 @@ def main():
 
     # Check for NaN values in critical columns
     st.write("### Check for NaN Values After Cleaning")
-    nan_counts = df.loc[df['Variable'].isin(required_columns), 'Value'].isnull().sum()
+    nan_counts = df[required_columns].isnull().sum()
     st.write("NaN Counts in Important Columns:")
     st.write(nan_counts)
 
     # Fill NaN values
-    for col in required_columns:
-        df.loc[df['Variable'] == col, 'Value'].fillna(df.loc[df['Variable'] == col, 'Value'].median(), inplace=True)
+    df.fillna({
+        'TotalSF': df.loc[df['Variable'] == 'TotalSF', 'Value'].median(),
+        'OverallQual': df.loc[df['Variable'] == 'OverallQual', 'Value'].mode()[0],
+        'GarageArea': df.loc[df['Variable'] == 'GarageArea', 'Value'].median(),
+        'YearBuilt': df.loc[df['Variable'] == 'YearBuilt', 'Value'].median(),
+        'SalePrice': df.loc[df['Variable'] == 'SalePrice', 'Value'].median()
+    }, inplace=True)
 
     # Re-check for NaN values after filling
-    nan_counts_after = df.loc[df['Variable'].isin(required_columns), 'Value'].isnull().sum()
+    nan_counts_after = df[required_columns].isnull().sum()
     st.write("NaN Counts in Important Columns After Filling:")
     st.write(nan_counts_after)
 
     # Proceed if critical columns are filled
-    if df.loc[df['Variable'].isin(['GarageArea', 'YearBuilt', 'SalePrice']), 'Value'].isnull().sum().sum() == 0:
-        X = df.loc[df['Variable'].isin(['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']), 'Value'].values.reshape(-1, 4)
-        y = df.loc[df['Variable'] == 'SalePrice', 'Value'].values
+    if df[['GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum().sum() == 0:
+        X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
+        y = df['SalePrice']
     else:
         st.write("Still have NaN values in critical columns. Exiting.")
         X, y = None, None
