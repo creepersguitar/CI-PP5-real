@@ -27,6 +27,11 @@ def clean_data(df):
     logging.info(f"Initial DataFrame shape: {df.shape}")
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
+    # Check the DataFrame structure
+    if 'Variable' not in df.columns or 'Value' not in df.columns:
+        logging.error("DataFrame does not contain 'Variable' or 'Value' columns.")
+        return df  # Return as is; the data structure is not as expected
+
     # Ensure the required numeric columns are present
     numeric_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'GarageArea', 'SalePrice', 'YearBuilt']
     for col in numeric_columns:
@@ -39,9 +44,11 @@ def clean_data(df):
 
     # Calculate TotalSF if required variables are present
     if all(col in df['Variable'].values for col in ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']):
-        total_flr_sf = df.loc[df['Variable'] == '1stFlrSF', 'Value'].fillna(0).values + \
-                       df.loc[df['Variable'] == '2ndFlrSF', 'Value'].fillna(0).values + \
-                       df.loc[df['Variable'] == 'TotalBsmtSF', 'Value'].fillna(0).values
+        total_flr_sf = (df.loc[df['Variable'] == '1stFlrSF', 'Value'].fillna(0).values +
+                        df.loc[df['Variable'] == '2ndFlrSF', 'Value'].fillna(0).values +
+                        df.loc[df['Variable'] == 'TotalBsmtSF', 'Value'].fillna(0).values)
+        
+        # Add TotalSF to DataFrame
         df = df.append({'Variable': 'TotalSF', 'Value': total_flr_sf}, ignore_index=True)
         logging.info("TotalSF column created successfully.")
     else:
@@ -138,11 +145,8 @@ def main():
     st.write(nan_counts)
 
     # Fill NaN values
-    df.loc[df['Variable'] == 'TotalSF', 'Value'].fillna(df.loc[df['Variable'] == 'TotalSF', 'Value'].median(), inplace=True)
-    df.loc[df['Variable'] == 'OverallQual', 'Value'].fillna(df.loc[df['Variable'] == 'OverallQual', 'Value'].mode()[0], inplace=True)
-    df.loc[df['Variable'] == 'GarageArea', 'Value'].fillna(df.loc[df['Variable'] == 'GarageArea', 'Value'].median(), inplace=True)
-    df.loc[df['Variable'] == 'YearBuilt', 'Value'].fillna(df.loc[df['Variable'] == 'YearBuilt', 'Value'].median(), inplace=True)
-    df.loc[df['Variable'] == 'SalePrice', 'Value'].fillna(df.loc[df['Variable'] == 'SalePrice', 'Value'].median(), inplace=True)
+    for col in required_columns:
+        df.loc[df['Variable'] == col, 'Value'].fillna(df.loc[df['Variable'] == col, 'Value'].median(), inplace=True)
 
     # Re-check for NaN values after filling
     nan_counts_after = df.loc[df['Variable'].isin(required_columns), 'Value'].isnull().sum()
