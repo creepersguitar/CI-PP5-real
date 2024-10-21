@@ -68,7 +68,11 @@ if 'OverallQual' in df.columns and df['OverallQual'].dtype == 'object':
 # Clean the YearBuilt column if necessary
 if 'YearBuilt' in df.columns:
     st.write("Unique values in YearBuilt before cleaning:", df['YearBuilt'].unique())
-    df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
+
+    # Check the data type of YearBuilt
+    if df['YearBuilt'].dtype == 'object':
+        df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
+    
     st.write("Unique values in YearBuilt after cleaning:", df['YearBuilt'].unique())
 
 # Check for NaN values in the necessary columns
