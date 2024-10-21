@@ -72,11 +72,14 @@ nan_counts = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice
 st.write("NaN Counts in Important Columns:")
 st.write(nan_counts)
 
-# Fill missing values with the median for numeric columns
-numeric_cols = df.select_dtypes(include=[np.number]).columns
-df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
+# Fill or drop NaN values in critical columns
+# Option 1: Drop rows with NaN values
+df.dropna(subset=['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice'], inplace=True)
 
-# Check for SalePrice and other features
+# Option 2: Alternatively, you could fill missing values instead
+# df.fillna(df.median(), inplace=True)
+
+# Check if the columns still exist
 if 'TotalSF' in df.columns and 'SalePrice' in df.columns:
     X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
     y = df['SalePrice']
