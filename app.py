@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO)
 def load_data(file_path):
     df = pd.read_csv(file_path)
     df.columns = df.columns.str.strip()  # Clean column names
+    logging.info(f"Loaded data with columns: {df.columns.tolist()}")
     return df
 
 # Function to clean the data
@@ -30,10 +31,13 @@ def clean_data(df):
 
     # Convert numeric columns
     for col in numeric_columns:
-        try:
-            df[col] = pd.to_numeric(df[col], errors='coerce')  # Convert to numeric, coercing errors to NaN
-        except Exception as e:
-            logging.error(f"Error converting {col}: {e}")
+        if col in df.columns:
+            try:
+                df[col] = pd.to_numeric(df[col], errors='coerce')  # Convert to numeric, coercing errors to NaN
+            except Exception as e:
+                logging.error(f"Error converting {col}: {e}")
+        else:
+            logging.warning(f"Column {col} is missing from the DataFrame.")
 
     # Log current columns after conversion
     logging.info(f"Columns after conversion: {df.columns.tolist()}")
@@ -47,18 +51,20 @@ def clean_data(df):
         logging.warning("Required columns for TotalSF calculation are missing.")
     
     # Convert OverallQual to numeric if it exists
-    if 'OverallQual' in df.columns and df['OverallQual'].dtype == 'object':
-        le = LabelEncoder()
-        df['OverallQual'] = le.fit_transform(df['OverallQual'])
-        logging.info("OverallQual column encoded.")
+    if 'OverallQual' in df.columns:
+        if df['OverallQual'].dtype == 'object':
+            le = LabelEncoder()
+            df['OverallQual'] = le.fit_transform(df['OverallQual'])
+            logging.info("OverallQual column encoded.")
+        else:
+            logging.info("OverallQual column is already numeric.")
     
-    # Log columns after processing OverallQual
-    logging.info(f"Columns after processing OverallQual: {df.columns.tolist()}")
-
     # Clean YearBuilt column
     if 'YearBuilt' in df.columns:
-        df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
+        df['YearBuilt'] = pd.to_numeric(df['YearBuilt'].astype(str).str.split(' - ').str[0].str.replace(',', ''), errors='coerce')
         logging.info("YearBuilt column cleaned.")
+    else:
+        logging.warning("YearBuilt column is missing from the DataFrame.")
     
     # Log final columns after cleaning
     logging.info(f"Columns after cleaning: {df.columns.tolist()}")
