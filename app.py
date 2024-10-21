@@ -145,7 +145,7 @@ def main():
     # Fill NaN values
     df_pivot.fillna({
         'TotalSF': df_pivot['TotalSF'].median(),
-        'OverallQual': df_pivot['OverallQual'].mode()[0],
+        'OverallQual': df_pivot['OverallQual'].mode(),
         'GarageArea': df_pivot['GarageArea'].median(),
         'YearBuilt': df_pivot['YearBuilt'].median(),
         'SalePrice': df_pivot['SalePrice'].median()
