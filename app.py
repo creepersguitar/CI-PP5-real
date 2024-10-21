@@ -23,13 +23,12 @@ def load_data(file_path):
 
 # Function to clean the data
 def clean_data(df):
-    numeric_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'GarageArea', 'SalePrice', 'YearBuilt']
-    
     # Log initial DataFrame shape and columns
     logging.info(f"Initial DataFrame shape: {df.shape}")
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
-    # Convert numeric columns
+    # Convert numeric columns if they exist
+    numeric_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'GarageArea', 'SalePrice', 'YearBuilt']
     for col in numeric_columns:
         if col in df.columns:
             try:
@@ -38,9 +37,6 @@ def clean_data(df):
                 logging.error(f"Error converting {col}: {e}")
         else:
             logging.warning(f"Column {col} is missing from the DataFrame.")
-
-    # Log current columns after conversion
-    logging.info(f"Columns after conversion: {df.columns.tolist()}")
 
     # Calculate TotalSF if required columns are present
     required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
@@ -110,14 +106,14 @@ def main():
     # Clean the data
     df = clean_data(df)
 
-    # Check for critical columns after cleaning
-    required_columns = ['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']
-    missing_columns = [col for col in required_columns if col not in df.columns]
+    # Check for critical rows after cleaning
+    required_rows = ['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']
+    missing_rows = [row for row in required_rows if row not in df['Variable'].values]
     
-    if missing_columns:
-        st.write(f"Missing critical columns: {missing_columns}. Please check the data.")
-        logging.warning(f"Missing critical columns: {missing_columns}")
-        return  # Exit if critical columns are missing
+    if missing_rows:
+        st.write(f"Missing critical rows: {missing_rows}. Please check the data.")
+        logging.warning(f"Missing critical rows: {missing_rows}")
+        return  # Exit if critical rows are missing
 
     # Log the DataFrame shape and columns
     logging.info(f"DataFrame shape after cleaning: {df.shape}")
@@ -125,8 +121,8 @@ def main():
 
     # Check for NaN values in critical columns
     st.write("### Check for NaN Values After Cleaning")
-    nan_counts = df[required_columns].isnull().sum()
-    st.write("NaN Counts in Important Columns:")
+    nan_counts = df[required_rows].isnull().sum()
+    st.write("NaN Counts in Important Rows:")
     st.write(nan_counts)
 
     # Fill NaN values
@@ -139,16 +135,16 @@ def main():
     }, inplace=True)
 
     # Re-check for NaN values after filling
-    nan_counts_after = df[required_columns].isnull().sum()
-    st.write("NaN Counts in Important Columns After Filling:")
+    nan_counts_after = df[required_rows].isnull().sum()
+    st.write("NaN Counts in Important Rows After Filling:")
     st.write(nan_counts_after)
 
-    # Proceed if critical columns are filled
+    # Proceed if critical rows are filled
     if df[['GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum().sum() == 0:
         X = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
         y = df['SalePrice']
     else:
-        st.write("Still have NaN values in critical columns. Exiting.")
+        st.write("Still have NaN values in critical rows. Exiting.")
         X, y = None, None
 
     # Proceed if X and y are valid
