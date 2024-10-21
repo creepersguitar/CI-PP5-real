@@ -44,12 +44,12 @@ st.write(f"Shape: {df.shape}")
 st.write("Columns:", df.columns)
 
 # Verify if the required columns are present for TotalSF calculation
-required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'SalePrice']
+required_columns = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF', 'SalePrice', 'GarageArea', 'OverallQual', 'YearBuilt']
 missing_columns = [col for col in required_columns if col not in df.columns]
 
 if not missing_columns:
     # Calculate TotalSF
-    df['TotalSF'] = df['1stFlrSF'] + df['2ndFlrSF'] + df['TotalBsmtSF']
+    df['TotalSF'] = df['1stFlrSF'].fillna(0) + df['2ndFlrSF'].fillna(0) + df['TotalBsmtSF'].fillna(0)
     st.write("TotalSF column successfully created.")
 else:
     st.write(f"The following required columns are missing for TotalSF calculation: {missing_columns}")
@@ -73,11 +73,14 @@ st.write("NaN Counts in Important Columns:")
 st.write(nan_counts)
 
 # Fill or drop NaN values in critical columns
-# Option 1: Drop rows with NaN values
-df.dropna(subset=['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice'], inplace=True)
-
-# Option 2: Alternatively, you could fill missing values instead
-# df.fillna(df.median(), inplace=True)
+# Filling NaN values with median for numerical columns
+df.fillna({
+    'TotalSF': df['TotalSF'].median(),
+    'OverallQual': df['OverallQual'].mode()[0],  # Fill with mode for categorical
+    'GarageArea': df['GarageArea'].median(),
+    'YearBuilt': df['YearBuilt'].median(),
+    'SalePrice': df['SalePrice'].median()
+}, inplace=True)
 
 # Check if the columns still exist
 if 'TotalSF' in df.columns and 'SalePrice' in df.columns:
