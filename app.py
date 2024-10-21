@@ -81,9 +81,20 @@ nan_counts_before = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'Sa
 st.write("NaN Counts in Important Columns Before Filling:")
 st.write(nan_counts_before)
 
-# Check the data types of the relevant columns
-st.write("### Data Types of Relevant Columns")
+# Ensure numeric columns are converted correctly
+for col in ['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']:
+    if df[col].dtype == 'object':
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+# Re-check data types after conversion
+st.write("### Data Types of Relevant Columns After Conversion")
 st.write(df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].dtypes)
+
+# Check for any remaining NaN values in the critical columns
+st.write("### Check for NaN Values After Conversion")
+nan_counts_after_conversion = df[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']].isnull().sum()
+st.write("NaN Counts in Important Columns After Conversion:")
+st.write(nan_counts_after_conversion)
 
 # Fill or drop NaN values in critical columns
 # Filling NaN values with median for numerical columns and mode for categorical
