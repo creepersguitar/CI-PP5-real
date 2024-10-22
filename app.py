@@ -102,6 +102,8 @@ def visualize_data(df):
         fig, ax = plt.subplots(figsize=(10, 8))
         sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', fmt='.2f', ax=ax)
         st.pyplot(fig)
+    else:
+        st.write("No numeric data available for correlation heatmap.")
 
 # Function to train the model
 def train_model(X, y):
