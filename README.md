@@ -17,6 +17,8 @@ Welcome to Heritige Housing, this project is to help a good friend with analysin
 14. [Credits](#credits)
 15. [Acknowledgements](#acknowledgements-optional)
 
+## Note
+ **Please Note that i am not happy with what i have done for this project and given more time and focus, i would make sure to fully test the application but due to a couple of personal commitments and family/mental health issues, the application isn't 100% complete its more like 85% complete.**
 ## Design
 
 The design of this project follows a structured approach that aligns with the CRISP-DM framework (Cross-Industry Standard Process for Data Mining). It ensures that the solution is tailored to the business requirements and supports user goals through data analysis, visualization, and predictive modeling.
