@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Function to load the dataset
 def load_data(file_path):
+    """Load the dataset and clean up column names."""
     df = pd.read_csv(file_path)
     df.columns = df.columns.str.strip()  # Clean column names
     logging.info(f"Loaded data with columns: {df.columns.tolist()}")
@@ -22,7 +23,7 @@ def load_data(file_path):
 
 # Function to clean the data
 def clean_data(df):
-    # Log initial DataFrame shape and columns
+    """Clean the data by converting non-numeric values and checking for required variables."""
     logging.info(f"Initial DataFrame shape: {df.shape}")
     logging.info(f"Initial columns: {df.columns.tolist()}")
 
@@ -33,31 +34,30 @@ def clean_data(df):
 
     # Handle non-numeric entries in 'Units' column
     def convert_to_numeric(value):
+        """Convert range values to average numeric values, and other values to float."""
         try:
-            # If the value is a range like "0 - 1418", split and take the average
-            if '-' in str(value):
+            if '-' in str(value):  # Handles range-like values "0 - 1418"
                 start, end = map(float, value.split('-'))
                 return (start + end) / 2
-            # Otherwise, try converting directly to float
             return float(value)
         except ValueError:
             return np.nan
 
-    # Apply the conversion function to the 'Units' column
+    # Apply conversion to the 'Units' column
     df['Units'] = df['Units'].apply(convert_to_numeric)
 
-    # Check for required columns in the DataFrame
+    # Required variables for TotalSF calculation
     required_vars = ['1stFlrSF', '2ndFlrSF', 'TotalBsmtSF']
     for col in required_vars:
         if col not in df['Variable'].values:
             logging.warning(f"Column {col} is missing from the DataFrame.")
-    
-    # Ensure the required numeric columns are present and convert to numeric
+
+    # Convert the 'Units' column to numeric for the required variables
     for col in required_vars:
         if col in df['Variable'].values:
             df.loc[df['Variable'] == col, 'Units'] = pd.to_numeric(df.loc[df['Variable'] == col, 'Units'], errors='coerce')
 
-    # Calculate TotalSF if required variables are present
+    # Calculate TotalSF if all required variables are present
     if all(var in df['Variable'].values for var in required_vars):
         first_flr_sf = df.loc[df['Variable'] == '1stFlrSF', 'Units'].fillna(0).values[0]
         second_flr_sf = df.loc[df['Variable'] == '2ndFlrSF', 'Units'].fillna(0).values[0]
@@ -71,22 +71,31 @@ def clean_data(df):
     else:
         logging.warning("Required variables for TotalSF calculation are missing.")
 
-    # Log the DataFrame after cleaning
     logging.info(f"DataFrame shape after cleaning: {df.shape}")
     logging.info(f"Columns after cleaning: {df['Variable'].unique()}")
-
     return df
 
 # Function to visualize data
 def visualize_data(df):
+    """Display exploratory data analysis visualizations."""
     st.subheader("Exploratory Data Analysis")
 
-    # Distribution of SalePrice
+    # Distribution of NaN values
+    st.write("### NaN Values Distribution")
+    nan_counts = df.isna().sum().sort_values(ascending=False)
+    nan_counts = nan_counts[nan_counts > 0]
+    if not nan_counts.empty:
+        fig = px.bar(nan_counts, x=nan_counts.index, y=nan_counts.values, title='NaN Values per Column')
+        st.plotly_chart(fig)
+    else:
+        st.write("No missing values found.")
+
+    # Display the distribution of SalePrice
     if 'SalePrice' in df.columns:
         fig = px.histogram(df, x='SalePrice', title='Sale Price Distribution')
         st.plotly_chart(fig)
 
-    # Correlation Heatmap
+    # Display a correlation heatmap
     numeric_df = df.select_dtypes(include=[np.number])
     if not numeric_df.empty:
         st.write("### Correlation Heatmap")
@@ -96,6 +105,7 @@ def visualize_data(df):
 
 # Function to train the model
 def train_model(X, y):
+    """Train the Random Forest model and return the model and test data."""
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
     rf_model.fit(X_train, y_train)
@@ -116,14 +126,12 @@ def main():
     # Clean the data
     df = clean_data(df)
 
-    # Reshape the DataFrame so 'Variable' values become columns
+    # Reshape DataFrame so 'Variable' values become columns
     df_pivot = df.pivot(index=None, columns='Variable', values='Units').reset_index(drop=True)
-    
-    # Log the reshaped DataFrame
-    logging.info(f"DataFrame after reshaping: {df_pivot.shape}")
+    logging.info(f"DataFrame shape after reshaping: {df_pivot.shape}")
     logging.info(f"Columns after reshaping: {df_pivot.columns.tolist()}")
 
-    # Check for critical columns after cleaning
+    # Check for critical columns after reshaping
     required_columns = ['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt', 'SalePrice']
     missing_columns = [col for col in required_columns if col not in df_pivot.columns]
     
@@ -132,41 +140,29 @@ def main():
         logging.warning(f"Missing critical columns: {missing_columns}")
         return  # Exit if critical columns are missing
 
-    # Check for NaN values in critical columns
-    st.write("### Check for NaN Values After Cleaning")
-    nan_counts = df_pivot[required_columns].isnull().sum()
-    st.write("NaN Counts in Important Columns:")
-    st.write(nan_counts)
-
-    # Fill NaN values
-    df_pivot.fillna({
-        'TotalSF': df_pivot['TotalSF'].median(),
-        'OverallQual': df_pivot['OverallQual'].median(),  # Use median for numerical fill
-        'GarageArea': df_pivot['GarageArea'].median(),
-        'YearBuilt': df_pivot['YearBuilt'].median(),
-        'SalePrice': df_pivot['SalePrice'].median()
-    }, inplace=True)
-
-    # Re-check for NaN values after filling
-    nan_counts_after = df_pivot[required_columns].isnull().sum()
-    st.write("NaN Counts in Important Columns After Filling:")
-    st.write(nan_counts_after)
-
-    # Proceed if critical columns are filled
-    if nan_counts_after.sum() == 0:
-        X = df_pivot[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
-        y = df_pivot['SalePrice']
-    else:
-        st.write("Still have NaN values in critical columns. Exiting.")
-        return  # Exit if any critical columns still have NaNs
-
-    # Proceed if X and y are valid
-    model, X_test, y_test = train_model(X, y)
-
-    # Visualize the data
+    # Visualize NaN values before filling
     visualize_data(df_pivot)
 
-    # Model Evaluation
+    # Fill NaN values with median for numerical columns
+    df_pivot.fillna(df_pivot.median(), inplace=True)
+
+    # Check for remaining NaN values after filling
+    nan_counts_after = df_pivot.isna().sum()
+    nan_counts_after = nan_counts_after[nan_counts_after > 0]
+    if not nan_counts_after.empty:
+        st.write("### Columns with Remaining NaN Values After Filling")
+        st.write(nan_counts_after)
+        logging.error("Some columns still contain NaN values after filling.")
+        return  # Exit if any columns still have NaNs
+
+    # Prepare features and target variable for model training
+    X = df_pivot[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
+    y = df_pivot['SalePrice']
+
+    # Train the model
+    model, X_test, y_test = train_model(X, y)
+
+    # Model evaluation metrics
     st.subheader("Model Evaluation")
     y_pred_rf = model.predict(X_test)
     fig, ax = plt.subplots(figsize=(8, 6))
