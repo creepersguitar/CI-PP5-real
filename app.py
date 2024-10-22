@@ -20,6 +20,7 @@ def load_data(file_path):
     logging.info(f"Loaded data with columns: {df.columns.tolist()}")
     return df
 
+# Function to clean the data
 def clean_data(df):
     # Log initial DataFrame shape and columns
     logging.info(f"Initial DataFrame shape: {df.shape}")
@@ -76,7 +77,6 @@ def clean_data(df):
 
     return df
 
-
 # Function to visualize data
 def visualize_data(df):
     st.subheader("Exploratory Data Analysis")
@@ -132,10 +132,6 @@ def main():
         logging.warning(f"Missing critical columns: {missing_columns}")
         return  # Exit if critical columns are missing
 
-    # Log the DataFrame shape and columns
-    logging.info(f"DataFrame shape after reshaping: {df_pivot.shape}")
-    logging.info(f"Columns available: {df_pivot.columns.tolist()}")
-
     # Check for NaN values in critical columns
     st.write("### Check for NaN Values After Cleaning")
     nan_counts = df_pivot[required_columns].isnull().sum()
@@ -145,7 +141,7 @@ def main():
     # Fill NaN values
     df_pivot.fillna({
         'TotalSF': df_pivot['TotalSF'].median(),
-        'OverallQual': df_pivot['OverallQual'].mode(),
+        'OverallQual': df_pivot['OverallQual'].median(),  # Use median for numerical fill
         'GarageArea': df_pivot['GarageArea'].median(),
         'YearBuilt': df_pivot['YearBuilt'].median(),
         'SalePrice': df_pivot['SalePrice'].median()
@@ -157,37 +153,34 @@ def main():
     st.write(nan_counts_after)
 
     # Proceed if critical columns are filled
-    if df_pivot[required_columns].isnull().sum().sum() == 0:
+    if nan_counts_after.sum() == 0:
         X = df_pivot[['TotalSF', 'OverallQual', 'GarageArea', 'YearBuilt']]
         y = df_pivot['SalePrice']
     else:
         st.write("Still have NaN values in critical columns. Exiting.")
-        X, y = None, None
+        return  # Exit if any critical columns still have NaNs
 
     # Proceed if X and y are valid
-    if X is not None and y is not None:
-        model, X_test, y_test = train_model(X, y)
+    model, X_test, y_test = train_model(X, y)
 
-        # Visualize the data
-        visualize_data(df_pivot)
+    # Visualize the data
+    visualize_data(df_pivot)
 
-        # Model Evaluation
-        st.subheader("Model Evaluation")
-        y_pred_rf = model.predict(X_test)
-        fig, ax = plt.subplots(figsize=(8, 6))
-        ax.scatter(y_test, y_test - y_pred_rf, alpha=0.5, edgecolor='b', s=50)
-        ax.axhline(y=0, color='red', linestyle='--', linewidth=2)
-        ax.set_title('Residuals Plot', fontsize=16)
-        ax.set_xlabel('Actual Sale Price', fontsize=14)
-        ax.set_ylabel('Residuals', fontsize=14)
-        st.pyplot(fig)
+    # Model Evaluation
+    st.subheader("Model Evaluation")
+    y_pred_rf = model.predict(X_test)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.scatter(y_test, y_test - y_pred_rf, alpha=0.5, edgecolor='b', s=50)
+    ax.axhline(y=0, color='red', linestyle='--', linewidth=2)
+    ax.set_title('Residuals Plot', fontsize=16)
+    ax.set_xlabel('Actual Sale Price', fontsize=14)
+    ax.set_ylabel('Residuals', fontsize=14)
+    st.pyplot(fig)
 
-        r2 = r2_score(y_test, y_pred_rf)
-        rmse = np.sqrt(mean_squared_error(y_test, y_pred_rf))
-        st.write(f"### Random Forest R²: {r2:.4f}")
-        st.write(f"### Random Forest RMSE: {rmse:.2f}")
-    else:
-        st.write("No sufficient data for model training.")
+    r2 = r2_score(y_test, y_pred_rf)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred_rf))
+    st.write(f"### Random Forest R²: {r2:.4f}")
+    st.write(f"### Random Forest RMSE: {rmse:.2f}")
 
 # Run the app
 if __name__ == "__main__":
