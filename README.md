@@ -1,5 +1,5 @@
 # Heritige Housing
-
+Welcome to Heritige Housing, this project is to help a good friend with analysing homes in Ames Iowa.
 # Contents
 1. [Design](#design)
 2. [User Stories](#user-stories)
@@ -16,40 +16,6 @@
 13. [Media](#media)
 14. [Credits](#credits)
 15. [Acknowledgements](#acknowledgements-optional)
-
-## How to use this repo
-
-1. Use this template to create your GitHub project repo
-
-2. Log into the cloud-based IDE with your GitHub account.
-
-3. On your Dashboard, click on the Create button
-
-4. Paste in the URL you copied from GitHub earlier
-
-5. Click Create
-
-6. Wait for the workspace to open. This can take a few minutes.
-
-7. Open a new terminal and `pip3 install -r requirements.txt`
-
-11. Open the jupyter_notebooks directory and click on the notebook you want to open.
-
-12. Click the kernel button and choose Python Environments.
-
-Note that the kernel says Python 3.8.18 as it inherits from the workspace so it will be Python-3.8.18 as installed by our template. To confirm this you can use `! python --version` in a notebook code cell.
-
-## Cloud IDE Reminders
-
-To log into the Heroku toolbelt CLI:
-
-1. Log in to your Heroku account and go to *Account Settings* in the menu under your avatar.
-2. Scroll down to the *API Key* and click *Reveal*
-3. Copy the key
-4. In your Cloud IDE, from the terminal, run `heroku_config`
-5. Paste in your API key when asked
-
-You can now use the `heroku` CLI program - try running `heroku apps` to confirm it works. This API key is unique and private to you so do not share it. If you accidentally make it public then you can create a new one with *Regenerate API Key*.
 
 ## Design
 
@@ -309,9 +275,16 @@ The main bugs i have fixed are making sure that each cell of code does not show 
 ## Testing
 This section is all about the tests i have performed to the application manually and via different browsers.
 ### Manual Testing
-
+I have not been able to fully test the application in terms of data loading and correct outputs, but i have been able to test if it loads on different browsers and that their is no visible errors being shown.
 ### Browser Testing
-
+Heritige Housing has been extensively tested on different browsers including edge, chrome, safari and firefox.
+| Browser | Layout | Functionality |
+|:.......:|:......:|:.............:|
+|  Chrome |   ✔    |        ✔     |
+| Safari  |   ✔    |        ✔     |
+| Edge    |   ✔    |        ✔     |
+| FireFox |   ✔    |        ✔     |
+| Ecosia  |   ✔    |        ✔     |
 ## Deployment
 This section talks about deploying to heroku
 ### Heroku
@@ -364,3 +337,5 @@ This section talks about deploying to heroku
 - My amazing peers who helped me when times were tough
 - The 2 project walkthroughs to give me insight as to how to deploy the application
 - Code institutes assessment criteria (to help me double check if i have done everything for pass/merit/distinction)
+- The Amazing Beth cottell who helped me try to figure out a fix to an error when it came to deploying the application.
+- Roman from the Code Institute Tutor Support team who helped fix the issue of deploying.
