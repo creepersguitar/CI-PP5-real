@@ -10,8 +10,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from dashboard import render_dashboard
-from data_processing import load_data, clean_data
-
 # Set up loggin
 logging.basicConfig(level=logging.INFO)
 
