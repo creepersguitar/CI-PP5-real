@@ -9,13 +9,14 @@ Welcome to Heritige Housing, this project is to help a good friend with analysin
 6. [ML business case](#machine-learning-business-case)
 7. [Dashboard Design](#dashboard-design)
 8. [Deployment](#deployment)
-9. [Unfixed Bugs](#unfixed-bugs)
-10. [Fixed Bugs](#fixed-bugs)
-11. [Testing](#testing)
-12. [contributing](#contributing)
-13. [Media](#media)
-14. [Credits](#credits)
-15. [Acknowledgements](#acknowledgements-optional)
+9. [model performance](#)
+10. [Unfixed Bugs](#unfixed-bugs)
+11. [Fixed Bugs](#fixed-bugs)
+12. [Testing](#testing)
+13. [contributing](#contributing)
+14. [Media](#media)
+15. [Credits](#credits)
+16. [Acknowledgements](#acknowledgements-optional)
 
 ## Note
  **Please Note that i am not happy with what i have done for this project and given more time and focus, i would make sure to fully test the application but due to a couple of personal commitments and family/mental health issues, the application isn't 100% complete its more like 85% complete.**
@@ -301,6 +302,17 @@ This section talks about deploying to heroku
 4. Select the branch you want to deploy, then click Deploy Branch.
 5. The deployment process should happen smoothly if all deployment files are fully functional. Click the button Open App on the top of the page to access your App.
 6. If the slug size is too large then add large files not required for the app to the .slugignore file.
+## Model Performance
+This section helps provides some numerical metrics for ames housing such as
+   - Root Mean Squared Error (RMSE): Measures the average error magnitude. 
+   - Mean Absolute Error (MAE): Captures the absolute errors.
+   - R² Score: Explains the proportion of variance captured by the model.
+The trained regression model achieved the following performance metrics on the test dataset:
+
+Root Mean Squared Error (RMSE): 
+Mean Absolute Error (MAE): 
+R-squared (R²): 
+These results indicate that the model effectively predicts housing prices, capturing 89% of the variance in the target variable.
 
 ## Main Data Analysis and Machine Learning Libraries
 

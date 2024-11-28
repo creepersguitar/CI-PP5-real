@@ -82,7 +82,18 @@ def train_model(X, y):
     rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
     rf_model.fit(X_train, y_train)
     return rf_model, X_test, y_test
+def mfp(y_true, y_pred):
+    # Example menu routing
+    menu = ["Home", "Model Performance"]
+    choice = st.sidebar.selectbox("Menu", menu)
 
+    if choice == "Home":
+        st.title("Welcome to the House Price Predictor")
+    elif choice == "Model Performance":
+        # Pass your actual and predicted values here
+        y_true = [100, 200, 300]  # Replace with actual values
+        y_pred = [110, 190, 295]  # Replace with predicted values
+        model_performance_page(y_true, y_pred)
 def main():
     st.title("Heritage Housing Price Prediction Dashboard")
     # Load and clean data

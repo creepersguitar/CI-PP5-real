@@ -81,6 +81,7 @@ def evaluate_model(model, X_test, y_test):
     ax.set_xlabel('Actual Sale Price', fontsize=14)
     ax.set_ylabel('Residuals', fontsize=14)
     st.pyplot(fig)
+
 def model_performance_page(y_true, y_pred):
     # Metrics
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
