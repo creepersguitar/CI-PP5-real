@@ -81,3 +81,28 @@ def evaluate_model(model, X_test, y_test):
     ax.set_xlabel('Actual Sale Price', fontsize=14)
     ax.set_ylabel('Residuals', fontsize=14)
     st.pyplot(fig)
+def model_performance_page(y_true, y_pred):
+    # Metrics
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+    mae = mean_absolute_error(y_true, y_pred)
+    r2 = r2_score(y_true, y_pred)
+
+    st.header("Model Performance")
+    st.metric("RMSE", f"{rmse:.2f}")
+    st.metric("MAE", f"{mae:.2f}")
+    st.metric("R-squared", f"{r2:.2f}")
+
+    # Scatter Plot: Actual vs Predicted
+    plt.figure(figsize=(6, 4))
+    plt.scatter(y_true, y_pred, alpha=0.6)
+    plt.xlabel('Actual Values')
+    plt.ylabel('Predicted Values')
+    plt.title('Actual vs Predicted')
+    st.pyplot(plt)
+
+    # Residual Plot
+    residuals = np.array(y_true) - np.array(y_pred)
+    plt.figure(figsize=(6, 4))
+    sns.histplot(residuals, kde=True)
+    plt.title('Residuals Distribution')
+    st.pyplot(plt)
