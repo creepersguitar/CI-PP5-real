@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from app_pages.dashboard import render_dashboard, model_performance_page
+from visualization import plot_prediction_vs_actual, plot_residuals, display_model_performance_metrics
 # Set up loggin
 logging.basicConfig(level=logging.INFO)
 
