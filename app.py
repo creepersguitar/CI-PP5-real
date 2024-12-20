@@ -1,11 +1,15 @@
+import pandas as pd
 import streamlit as st
 from app_pages import dashboard, visualization, model_performance
+
+data = pd.read_csv('assets/AmesHousing.csv')
+
 
 # Title for the app
 st.title('House Price Prediction Dashboard')
 
 # Sidebar for navigation
-page = st.sidebar.radio("Select a Page", ["Home", "Data Visualizations", "Model Performance", "Predictions"])
+page = st.sidebar.radio("Select a Page", ["Home", "Data Visualizations", "Model Performance", "Predictions", "Bar chart"])
 
 # Navigation logic
 if page == "Home":
@@ -16,3 +20,5 @@ elif page == "Model Performance":
     model_performance.show_metrics()
 elif page == "Predictions":
     dashboard.make_predictions()
+elif page == "Bar chart":
+    bar.barchart()
