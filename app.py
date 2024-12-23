@@ -3,6 +3,12 @@ import streamlit as st
 from app_pages import dashboard, visualization, model_performance, bar
 
 
+st.set_page_config(
+    page_title="Real Estate Dashboard",
+    page_icon="🏠",
+    layout="wide",
+)
+
 # Title for the app
 st.title('House Price Prediction Dashboard')
 
@@ -20,10 +26,3 @@ elif page == "Predictions":
     dashboard.make_predictions()
 elif page == "Bar chart":
     bar.barchart()
-
-
-st.set_page_config(
-    page_title="Real Estate Dashboard",
-    page_icon="🏠",
-    layout="wide",
-)
