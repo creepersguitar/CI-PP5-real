@@ -27,3 +27,15 @@ elif page == "Predictions":
     dashboard.make_predictions()
 elif page == "Bar chart":
     bar.barchart()
+elif page == "KPIs":
+    kpis.display_kpis()
+elif page == "Portfolio Overview":
+    portfolio_overview.display_portfolio()
+elif page == "Market Analysis":
+    market_analysis.display_market_analysis()
+elif page == "Interactive Filters":
+    interactive_filters.display_filters()
+elif page == "Alerts":
+    alerts.display_alerts()
+elif page == "Trend Analysis":
+    trend_analysis.display_trends()
