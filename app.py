@@ -2,6 +2,9 @@ import pandas as pd
 import streamlit as st
 from app_pages import dashboard, visualization, model_performance, bar,kpis, portfolio_overview, market_analysis, interactive_filters, alerts, trend_analysis
 
+# Load the dataset
+data = pd.read_csv('assets/AmesHousing.csv')
+
 
 st.set_page_config(
     page_title="Real Estate Dashboard",
