@@ -20,3 +20,10 @@ elif page == "Predictions":
     dashboard.make_predictions()
 elif page == "Bar chart":
     bar.barchart()
+
+
+st.set_page_config(
+    page_title="Real Estate Dashboard",
+    page_icon="🏠",
+    layout="wide",
+)
