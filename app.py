@@ -28,14 +28,14 @@ elif page == "Predictions":
 elif page == "Bar chart":
     bar.barchart()
 elif page == "KPIs":
-    kpis.display_kpis()
+    kpis.display_kpis(data)
 elif page == "Portfolio Overview":
-    portfolio_overview.display_portfolio()
+    portfolio_overview.display_portfolio(data)
 elif page == "Market Analysis":
-    market_analysis.display_market_analysis()
+    market_analysis.display_market_analysis(data)
 elif page == "Interactive Filters":
-    interactive_filters.display_filters()
+    interactive_filters.display_filters(data)
 elif page == "Alerts":
-    alerts.display_alerts()
+    alerts.display_alerts(data)
 elif page == "Trend Analysis":
-    trend_analysis.display_trends()
+    trend_analysis.display_trends(data)
