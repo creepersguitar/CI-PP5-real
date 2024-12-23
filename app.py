@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from app_pages import dashboard, visualization, model_performance, bar
+from app_pages import dashboard, visualization, model_performance, bar,kpis, portfolio_overview, market_analysis, interactive_filters, alerts, trend_analysis
 
 
 st.set_page_config(
@@ -13,7 +13,8 @@ st.set_page_config(
 st.title('House Price Prediction Dashboard')
 
 # Sidebar for navigation
-page = st.sidebar.radio("Select a Page", ["Home", "Data Visualizations", "Model Performance", "Predictions", "Bar chart"])
+page = st.sidebar.radio("Select a Page", ["Home", "Data Visualizations", "Model Performance", "Predictions", "Bar chart", "KPIs", "Portfolio Overview", "Market Analysis", 
+                                  "Interactive Filters", "Alerts", "Trend Analysis"])
 
 # Navigation logic
 if page == "Home":
