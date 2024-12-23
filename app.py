@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from app_pages import dashboard, visualization, model_performance
+from app_pages import dashboard, visualization, model_performance, bar
 
 data = pd.read_csv('assets/AmesHousing.csv')
 
