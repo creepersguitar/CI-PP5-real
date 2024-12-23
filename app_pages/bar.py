@@ -5,32 +5,37 @@ import pandas as pd
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
 
-# Bar chart function without 'Region'
+# Bar chart function
 def barchart():
-    # Check if the necessary column exists
-    if 'Avg_Price' in data.columns:
-        # Create a bar chart for average prices
+    # Filter for the 'SalePrice' row
+    sale_price_row = data[data['Variable'] == 'SalePrice']
+
+    # Check if 'SalePrice' exists in the dataset
+    if not sale_price_row.empty:
+        # Extract the units range
+        units_range = sale_price_row['Units'].values[0]  # Get the 'Units' value
+        units_values = list(map(int, units_range.split(" - ")))  # Convert range to a list of integers
+
+        # Create a bar chart
         fig = px.bar(
-            data,
-            x=data.index,  # Use the index as the x-axis if no grouping column exists
-            y='Avg_Price',
-            title='Average Property Prices',
-            labels={'Avg_Price': 'Average Price ($)', 'index': 'Property Index'},
-            text='Avg_Price'
+            x=["Minimum", "Maximum"],  # Labels for the x-axis
+            y=units_values,  # The min and max values from the range
+            title='Sale Price Range',
+            labels={'x': 'Range Type', 'y': 'Sale Price ($)'},
+            text=units_values
         )
 
         # Customize the chart
         fig.update_traces(texttemplate='$%{text:,.2f}', textposition='outside')
         fig.update_layout(
             uniformtext_minsize=8,
-            uniformtext_mode='hide',
-            xaxis_tickangle=-45
+            uniformtext_mode='hide'
         )
 
         # Display the chart in Streamlit
         st.plotly_chart(fig)
     else:
-        st.error("The column 'Avg_Price' is not found in the dataset.")
+        st.error("The 'SalePrice' variable is not found in the dataset.")
 
 # Call the bar chart function
 barchart()
