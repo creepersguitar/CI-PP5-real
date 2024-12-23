@@ -1,5 +1,8 @@
 import plotly.express as px
 import streamlit as st
+import pandas as pd
+
+data = pd.read_csv('assets/AmesHousing.csv')
 
 def barchart():
     # Create the bar chart
