@@ -23,7 +23,8 @@ def display_kpis(data):
     total_properties = 100  # Replace with actual calculation if available
     properties_sold = 80    # Replace with actual calculation if available
     average_days_on_market = 45  # Example placeholder
-
+    st.write("""the Total properties, properties sold and average days on market
+            are placeholders to be used if the dataset is expanded on!""")
     # Display KPIs
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Properties", total_properties)
