@@ -9,21 +9,24 @@ data = pd.read_csv('assets/AmesHousing.csv')
 def display_portfolio(data):
     st.header("Portfolio Overview")
 
-    # Extract OverallQual range
+    # Extract OverallQual descriptive row
     overall_qual_row = data[data["Variable"] == "OverallQual"]
 
     if not overall_qual_row.empty:
-        # Parse the range from the "Units" column (e.g., "1 - 10")
-        overall_qual_range = overall_qual_row["Units"].values[0]  # Example: "1 - 10"
-        min_qual, max_qual = map(int, overall_qual_range.split(" - "))
+        # Extract the descriptive string from the "Units" column
+        overall_qual_descriptions = overall_qual_row["Units"].values[0]
+        
+        # Parse the descriptions to extract valid numeric quality levels
+        quality_levels = [int(entry.split(":")[0]) for entry in overall_qual_descriptions.split("; ")]
+        min_qual, max_qual = min(quality_levels), max(quality_levels)
     else:
         st.error("OverallQual data is missing in the CSV.")
         return
 
-    # Create a dummy property dataset (replace this with real data)
+    # Create a dummy property dataset (replace with real data if available)
     properties = {
         "Property ID": range(1, 11),  # Example property IDs
-        "OverallQual": [min_qual, max_qual, 7, 6, 8, 5, 9, 4, 3, 10]  # Example qualities
+        "OverallQual": [min_qual, max_qual, 7, 6, 8, 5, 9, 4, 3, 10]  # Example quality levels
     }
 
     # Convert to DataFrame
