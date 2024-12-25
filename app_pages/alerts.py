@@ -5,18 +5,37 @@ import pandas as pd
 data = pd.read_csv('assets/AmesHousing.csv')
 
 def display_alerts(data):
-    st.header("Alerts and Notifications")
+    st.header("Property Alerts")
 
-    # Example alert for high inventory
-    total_inventory = len(data)
-    if total_inventory > 1000:
-        st.warning("High inventory levels detected! Consider adjusting property prices.")
+    # Simulated dataset for testing
+    dummy_data = {
+        "Property ID": range(1, 11),
+        "OverallQual": [7, 8, 6, 5, 9, 8, 4, 3, 10, 2],
+        "SalePrice": [450000, 500000, 350000, 300000, 600000, 480000, 280000, 200000, 750000, 150000],
+        "GrLivArea": [2000, 2500, 1800, 1600, 3000, 2400, 1400, 1200, 3500, 1000],
+    }
+    alert_data = pd.DataFrame(dummy_data)
 
-    # Alert for properties with very low or very high prices
-    expensive_properties = data[data["SalePrice"] > 500000]
-    cheap_properties = data[data["SalePrice"] < 100000]
+    # Set alert thresholds
+    expensive_threshold = 500000
+    small_area_threshold = 1500
 
+    # Properties above expensive threshold
+    expensive_properties = alert_data[alert_data["SalePrice"] > expensive_threshold]
     if not expensive_properties.empty:
-        st.info(f"There are {len(expensive_properties)} high-end properties priced above $500,000.")
-    if not cheap_properties.empty:
-        st.info(f"There are {len(cheap_properties)} budget properties priced below $100,000.")
+        st.subheader("Expensive Properties Alert")
+        st.write("The following properties exceed the sale price threshold:")
+        st.write(expensive_properties)
+    else:
+        st.subheader("Expensive Properties Alert")
+        st.write("No properties exceed the sale price threshold.")
+
+    # Properties with small living area
+    small_properties = alert_data[alert_data["GrLivArea"] < small_area_threshold]
+    if not small_properties.empty:
+        st.subheader("Small Living Area Alert")
+        st.write("The following properties have a smaller living area than the threshold:")
+        st.write(small_properties)
+    else:
+        st.subheader("Small Living Area Alert")
+        st.write("No properties have a smaller living area than the threshold.")
