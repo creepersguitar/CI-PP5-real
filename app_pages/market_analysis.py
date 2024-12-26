@@ -1,11 +1,13 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+from app_pages import apply_global_filters
 
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
 
 def display_market_analysis(data):
+    data = apply_global_filters(data)
     st.header("Market Analysis")
 
     # Extract OverallCond descriptive row

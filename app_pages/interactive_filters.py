@@ -4,53 +4,30 @@ import pandas as pd
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
 
-def display_filters(data):
-    st.header("Interactive Filters")
-
-    # Simulate a dataset for testing
-    dummy_data = {
-        "Property ID": range(1, 11),
-        "OverallQual": [7, 8, 6, 5, 9, 8, 4, 3, 10, 2],
-        "SalePrice": [450000, 500000, 350000, 300000, 600000, 480000, 280000, 200000, 750000, 150000],
-        "GrLivArea": [2000, 2500, 1800, 1600, 3000, 2400, 1400, 1200, 3500, 1000],
-    }
-    market_df = pd.DataFrame(dummy_data)
-
-    # Interactive filters
-    st.sidebar.header("Filters")
-
-    # Filter by SalePrice
-    min_price, max_price = st.sidebar.slider(
-        "Sale Price Range ($):",
-        min_value=int(market_df["SalePrice"].min()),
-        max_value=int(market_df["SalePrice"].max()),
-        value=(int(market_df["SalePrice"].min()), int(market_df["SalePrice"].max()))
+def apply_global_filters(data):
+    # Filter: Year Built Range
+    year_range = st.sidebar.slider(
+        "Select Year Built Range", 
+        min_value=int(data["YearBuilt"].min()), 
+        max_value=int(data["YearBuilt"].max()), 
+        value=(1950, 2000)
     )
 
-    # Filter by OverallQual
-    min_qual, max_qual = st.sidebar.slider(
-        "Overall Quality Range:",
-        min_value=int(market_df["OverallQual"].min()),
-        max_value=int(market_df["OverallQual"].max()),
-        value=(int(market_df["OverallQual"].min()), int(market_df["OverallQual"].max()))
+    # Filter: Lot Area Range
+    lot_area_range = st.sidebar.slider(
+        "Select Lot Area Range (sq ft)", 
+        min_value=int(data["LotArea"].min()), 
+        max_value=int(data["LotArea"].max()), 
+        value=(5000, 15000)
     )
 
-    # Apply filters
-    filtered_data = market_df[
-        (market_df["SalePrice"] >= min_price) &
-        (market_df["SalePrice"] <= max_price) &
-        (market_df["OverallQual"] >= min_qual) &
-        (market_df["OverallQual"] <= max_qual)
+    # Apply filters to the data
+    filtered_data = data[
+        (data["YearBuilt"] >= year_range[0]) & 
+        (data["YearBuilt"] <= year_range[1]) & 
+        (data["LotArea"] >= lot_area_range[0]) & 
+        (data["LotArea"] <= lot_area_range[1])
     ]
 
-    # Display filtered data
-    st.subheader("Filtered Properties")
-    st.write(filtered_data)
-
-    # Summary statistics
-    st.subheader("Summary Statistics")
-    st.write(filtered_data.describe())
-
-    # Visualization
-    st.subheader("Price Distribution")
-    st.bar_chart(filtered_data["SalePrice"])
+    st.sidebar.write(f"Filtered Properties: {len(filtered_data)}")
+    return filtered_data

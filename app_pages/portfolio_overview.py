@@ -1,12 +1,14 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from app_pages import apply_global_filters
 
 
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
 
 def display_portfolio(data):
+    data = apply_global_filters(data)
     st.header("Portfolio Overview")
 
     # Extract OverallQual descriptive row
