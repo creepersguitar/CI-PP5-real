@@ -42,3 +42,20 @@ def display_market_analysis(data):
 
     # Visualize the data
     st.bar_chart(avg_price_by_condition.set_index("OverallCond"))
+    column = st.selectbox("Select Column for Outlier Detection", data.select_dtypes(include="number").columns)
+    outliers = detect_outliers(data, column)
+    st.write(outliers)
+
+def detect_outliers(data, column, z_threshold=3):
+    # Calculate Z-scores
+    data["Z-Score"] = (data[column] - data[column].mean()) / data[column].std()
+    outliers = data[np.abs(data["Z-Score"]) > z_threshold]
+
+    # Plot the outliers
+    fig = px.scatter(data, x=column, y="Z-Score", color=np.abs(data["Z-Score"]) > z_threshold,
+                     title=f"Outliers in {column}",
+                     labels={"color": "Outlier"})
+    st.plotly_chart(fig)
+
+    st.write(f"Number of Outliers in {column}: {len(outliers)}")
+    return outliers
