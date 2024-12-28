@@ -16,7 +16,7 @@ st.set_page_config(
 st.title('House Price Prediction Dashboard')
 
 # Sidebar for navigation
-page = st.sidebar.radio("Select a Page", ["Home", "Data Visualizations", "Model Performance", "Predictions", "Bar chart", "KPIs", "Portfolio Overview", "Market Analysis", 
+page = st.sidebar.radio("Select a Page", ["Home", "Data Visualizations", "Model Performance", "Bar chart", "KPIs", "Portfolio Overview", "Market Analysis", 
                                   "Interactive Filters", "Alerts", "Trend Analysis"])
 
 # Navigation logic
