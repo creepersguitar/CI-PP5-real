@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from app_pages import apply_global_filters
+from app_pages.interactive_filters import apply_global_filters
 
 
 # Load the dataset

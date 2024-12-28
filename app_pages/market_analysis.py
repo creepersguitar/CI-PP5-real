@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-from app_pages import apply_global_filters
+from app_pages.interactive_filters import apply_global_filters
 
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
