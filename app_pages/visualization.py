@@ -2,8 +2,17 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from app_pages.interactive_filters import apply_global_filters
 
-fdata = apply_global_filters(data)
+def initialize(input_data):
+    global fdata
+    fdata = apply_global_filters(input_data)
 
+def display_visualizations():
+    # Use the filtered data here
+    if fdata is not None:
+        # Example: Generate a chart or visual
+        print(fdata.head())
+    else:
+        print("Data not initialized.")
 
 # Function to display visualizations
 def show_visualizations():

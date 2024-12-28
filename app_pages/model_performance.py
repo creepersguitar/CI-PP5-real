@@ -1,8 +1,12 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 from app_pages.interactive_filters import apply_global_filters
-fdata = apply_global_filters(data)
 
+fdata = None
+
+def initialize(input_data):
+    global fdata
+    fdata = apply_global_filters(input_data)
 
 # Function to display model performance
 def show_metrics():
