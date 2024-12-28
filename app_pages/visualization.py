@@ -1,6 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-from app_pages import apply_global_filters
+from app_pages.interactive_filters import apply_global_filters
 
 
 # Function to display visualizations
