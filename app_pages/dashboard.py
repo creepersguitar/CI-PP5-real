@@ -36,4 +36,4 @@ def make_predictions(data):
         st.write(f"The estimated sale price is: ${prediction:,.2f}")
 
 # Run the prediction function
-make_predictions(data)
+make_predictions()
