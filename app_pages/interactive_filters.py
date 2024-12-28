@@ -9,9 +9,12 @@ except FileNotFoundError:
     st.stop()
 
 # Validate dataset structure
+required_columns = ["Variable", "Units"]
 required_variables = ["YearBuilt", "LotArea"]
-if "Variable" not in data.columns or "Units" not in data.columns:
-    st.error("The dataset must contain 'Variable' and 'Units' columns.")
+
+if not all(col in data.columns for col in required_columns):
+    missing_cols = [col for col in required_columns if col not in data.columns]
+    st.error(f"The dataset must contain the following columns: {', '.join(missing_cols)}")
     st.stop()
 
 if not all(var in data["Variable"].values for var in required_variables):
@@ -19,18 +22,21 @@ if not all(var in data["Variable"].values for var in required_variables):
     st.error(f"Missing required rows in the 'Variable' column: {', '.join(missing_vars)}")
     st.stop()
 
-# Pivot the data for easier filtering (Variable as columns, Value as rows)
+# Pivot the data for easier filtering
 try:
+    # Ensure 'Units' column is numeric
+    data["Units"] = pd.to_numeric(data["Units"], errors="coerce")
+    
+    # Pivot the dataset
     pivoted_data = data.pivot(index=None, columns="Variable", values="Units")
-    pivoted_data = pivoted_data.apply(pd.to_numeric, errors="coerce")  # Convert values to numeric
+    
+    # Drop rows with NaN in critical variables
+    pivoted_data = pivoted_data.dropna(subset=required_variables)
 except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
     st.stop()
 
 def apply_global_filters(pivoted_data):
-    # Drop rows with NaN values in critical columns
-    pivoted_data = pivoted_data.dropna(subset=required_variables)
-
     # Filter: Year Built Range
     year_range = st.sidebar.slider(
         "Select Year Built Range", 
@@ -61,5 +67,5 @@ def apply_global_filters(pivoted_data):
 # Apply the global filters
 filtered_data = apply_global_filters(pivoted_data)
 
-# Display filtered data for debugging purposes
+# Display filtered data
 st.write("Filtered Data", filtered_data)
