@@ -1,5 +1,5 @@
 import streamlit as st
-from interactive_filters import apply_global_filters
+from app_pages.interactive_filters import apply_global_filters
 # Example function to make predictions without sklearn
 def make_predictions():
     data = apply_global_filters(data)
