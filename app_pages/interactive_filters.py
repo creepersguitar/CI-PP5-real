@@ -10,8 +10,8 @@ except FileNotFoundError:
 
 # Validate dataset structure
 required_variables = ["YearBuilt", "LotArea"]
-if "Variable" not in data.columns or "Value" not in data.columns:
-    st.error("The dataset must contain 'Variable' and 'Value' columns.")
+if "Variable" not in data.columns or "Units" not in data.columns:
+    st.error("The dataset must contain 'Variable' and 'Units' columns.")
     st.stop()
 
 if not all(var in data["Variable"].values for var in required_variables):
@@ -21,7 +21,7 @@ if not all(var in data["Variable"].values for var in required_variables):
 
 # Pivot the data for easier filtering (Variable as columns, Value as rows)
 try:
-    pivoted_data = data.pivot(index=None, columns="Variable", values="Value")
+    pivoted_data = data.pivot(index=None, columns="Variable", values="Units")
     pivoted_data = pivoted_data.apply(pd.to_numeric, errors="coerce")  # Convert values to numeric
 except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
