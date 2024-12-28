@@ -35,7 +35,7 @@ elif page == "Portfolio Overview":
 elif page == "Market Analysis":
     market_analysis.display_market_analysis(data)
 elif page == "Interactive Filters":
-    interactive_filters.display_filters(data)
+    interactive_filters.apply_global_filters(data)
 elif page == "Alerts":
     alerts.display_alerts(data)
 elif page == "Trend Analysis":
