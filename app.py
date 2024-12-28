@@ -27,7 +27,7 @@ elif page == "Data Visualizations":
 elif page == "Model Performance":
     model_performance.show_metrics()
 elif page == "Predictions":
-    dashboard.make_predictions()
+    dashboard.make_predictions(data)
 elif page == "Bar chart":
     bar.barchart()
 elif page == "KPIs":
