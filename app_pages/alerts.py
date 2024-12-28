@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
 from app_pages.interactive_filters import apply_global_filters
+fdata = apply_global_filters(data)
 
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
 
 def display_alerts(data):
-    data = apply_global_filters(data)
     st.header("Property Alerts")
 
     # Simulated dataset for testing

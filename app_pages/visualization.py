@@ -2,10 +2,11 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from app_pages.interactive_filters import apply_global_filters
 
+fdata = apply_global_filters(data)
+
 
 # Function to display visualizations
 def show_visualizations():
-    data = apply_global_filters(data)
     st.header("Data Visualizations")
 
     # Distribution of Sale Price (example)

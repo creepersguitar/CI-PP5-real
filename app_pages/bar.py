@@ -2,13 +2,13 @@ import plotly.express as px
 import streamlit as st
 import pandas as pd
 from app_pages.interactive_filters import apply_global_filters
+fdata = apply_global_filters(data)
 
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
 
 # Bar chart function
 def barchart():
-    data = apply_global_filters(data)
     # Filter for the 'SalePrice' row
     sale_price_row = data[data['Variable'] == 'SalePrice']
 

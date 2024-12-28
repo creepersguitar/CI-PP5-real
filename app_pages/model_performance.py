@@ -1,11 +1,11 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 from app_pages.interactive_filters import apply_global_filters
+fdata = apply_global_filters(data)
 
 
 # Function to display model performance
 def show_metrics():
-    data = apply_global_filters(data)
     st.header("Model Performance Metrics")
 
     # Display model performance metrics (Replace with actual results)
