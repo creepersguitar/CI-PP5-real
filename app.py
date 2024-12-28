@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from app_pages import dashboard, visualization, model_performance, bar,kpis, portfolio_overview, market_analysis, interactive_filters, alerts, trend_analysis, search
+from app_pages import visualization, model_performance, bar,kpis, portfolio_overview, market_analysis, interactive_filters, alerts, trend_analysis, search
 
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
@@ -26,8 +26,6 @@ elif page == "Data Visualizations":
     visualization.show_visualizations()
 elif page == "Model Performance":
     model_performance.show_metrics()
-elif page == "Predictions":
-    dashboard.make_predictions()
 elif page == "Bar chart":
     bar.barchart()
 elif page == "KPIs":
