@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from app_pages import dashboard, visualization, model_performance, bar,kpis, portfolio_overview, market_analysis, interactive_filters, alerts, trend_analysis
+from app_pages import dashboard, visualization, model_performance, bar,kpis, portfolio_overview, market_analysis, interactive_filters, alerts, trend_analysis, search
 
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
@@ -42,3 +42,5 @@ elif page == "Alerts":
     alerts.display_alerts(data)
 elif page == "Trend Analysis":
     trend_analysis.display_trends(data)
+elif page == "Search":
+    search_properties(data)
