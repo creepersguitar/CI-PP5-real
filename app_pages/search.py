@@ -1,5 +1,5 @@
 import streamlit as st
-
+import pandas as pd
 # Load the dataset
 data = pd.read_csv('assets/AmesHousing.csv')
 
