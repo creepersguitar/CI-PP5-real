@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import traceback
 
 # Load the dataset
 try:
@@ -69,6 +70,7 @@ numeric_columns = [
 
 def apply_global_filters(data):
     try:
+        # Debug: Display initial dataset
         st.write("Data before pivoting:", data.head())
         st.write("Columns before pivoting:", data.columns)
 
@@ -84,8 +86,7 @@ def apply_global_filters(data):
         required_columns = ["YearBuilt", "LotArea"]
         missing_columns = [col for col in required_columns if col not in pivoted_data.columns]
         if missing_columns:
-            st.error(f"Missing required columns after pivoting: {missing_columns}")
-            st.stop()
+            raise KeyError(f"Missing required columns after pivoting: {missing_columns}")
 
         # Convert numeric columns if necessary
         for col in required_columns:
@@ -124,5 +125,6 @@ def apply_global_filters(data):
         return filtered_data
 
     except Exception as e:
-        st.error(f"Error in apply_global_filters: {str(e)}")
+        st.error(f"Error in apply_global_filters: {e}")
+        st.write(traceback.format_exc())  # Log the full traceback for debugging
         st.stop()
