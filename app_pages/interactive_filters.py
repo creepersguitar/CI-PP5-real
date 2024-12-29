@@ -70,19 +70,21 @@ numeric_columns = [
 # Apply global filters
 def apply_global_filters(data):
     # Filter: Year Built Range
+# Convert min and max to integers for the slider
     year_range = st.sidebar.slider(
-        "Select Year Built Range", 
-        min_value=data["YearBuilt"].min(), 
-        max_value=data["YearBuilt"].max(), 
-        value=(1950, 2000)
+    "Select Year Built Range", 
+    min_value=int(pivoted_data["YearBuilt"].min()), 
+    max_value=int(pivoted_data["YearBuilt"].max()), 
+    value=(1950, 2000)  # Default range
     )
+
 
     # Filter: Lot Area Range
     lot_area_range = st.sidebar.slider(
-        "Select Lot Area Range (sq ft)", 
-        min_value=data["LotArea"].min(), 
-        max_value=data["LotArea"].max(), 
-        value=(5000, 15000)
+    "Select Lot Area Range (sq ft)", 
+    min_value=int(pivoted_data["LotArea"].min()), 
+    max_value=int(pivoted_data["LotArea"].max()), 
+    value=(5000, 15000)  # Default range
     )
 
     # Apply filters
