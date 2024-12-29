@@ -22,50 +22,52 @@ if not all(var in data["Variable"].values for var in required_variables):
     st.error(f"Missing required rows in the 'Variable' column: {', '.join(missing_vars)}")
     st.stop()
 
-# Pivot the data for easier filtering
+# Pivot the dataset
 try:
-    # Ensure 'Units' column is numeric
-    data["Units"] = pd.to_numeric(data["Units"], errors="coerce")
-    
-    # Pivot the dataset
     pivoted_data = data.pivot(index=None, columns="Variable", values="Units")
-    
-    # Drop rows with NaN in critical variables
-    pivoted_data = pivoted_data.dropna(subset=required_variables).fillna(0)
+    pivoted_data.columns.name = None  # Remove the "Variable" label from columns
+    pivoted_data.reset_index(drop=True, inplace=True)
 except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
     st.stop()
 
-def apply_global_filters(pivoted_data):
+# Convert numeric columns to appropriate data types
+numeric_columns = [
+    "YearBuilt",
+    "LotArea"
+]
+for col in numeric_columns:
+    pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(int)
+
+# Apply global filters
+def apply_global_filters(data):
     # Filter: Year Built Range
     year_range = st.sidebar.slider(
         "Select Year Built Range", 
-        min_value=int(pivoted_data["YearBuilt"].min()), 
-        max_value=int(pivoted_data["YearBuilt"].max()), 
+        min_value=data["YearBuilt"].min(), 
+        max_value=data["YearBuilt"].max(), 
         value=(1950, 2000)
     )
 
     # Filter: Lot Area Range
     lot_area_range = st.sidebar.slider(
         "Select Lot Area Range (sq ft)", 
-        min_value=int(pivoted_data["LotArea"].min()), 
-        max_value=int(pivoted_data["LotArea"].max()), 
+        min_value=data["LotArea"].min(), 
+        max_value=data["LotArea"].max(), 
         value=(5000, 15000)
     )
 
-    # Apply filters to the data
-    filtered_data = pivoted_data[
-        (pivoted_data["YearBuilt"] >= year_range[0]) & 
-        (pivoted_data["YearBuilt"] <= year_range[1]) & 
-        (pivoted_data["LotArea"] >= lot_area_range[0]) & 
-        (pivoted_data["LotArea"] <= lot_area_range[1])
+    # Apply filters
+    filtered_data = data[
+        (data["YearBuilt"] >= year_range[0]) & 
+        (data["YearBuilt"] <= year_range[1]) & 
+        (data["LotArea"] >= lot_area_range[0]) & 
+        (data["LotArea"] <= lot_area_range[1])
     ]
 
     st.sidebar.write(f"Filtered Properties: {len(filtered_data)}")
     return filtered_data
 
-# Apply the global filters
+# Apply filters and display data
 filtered_data = apply_global_filters(pivoted_data)
-
-# Display filtered data
-st.write("Filtered Data", filtered_data)
+st.write(filtered_data)
