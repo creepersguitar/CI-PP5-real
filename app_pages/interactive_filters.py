@@ -23,18 +23,17 @@ if not all(var in data["Variable"].values for var in required_variables):
     st.stop()
 
 # Pivot the dataset
-# Pivot the dataset
 try:
-    # Check for duplicates
+    # Ensure no duplicates in "Variable" column
     if data["Variable"].duplicated().any():
         st.warning("Duplicate variables found in the dataset. Removing duplicates...")
         data = data.drop_duplicates(subset=["Variable"], keep="first")
     
-    # Pivot the data
+    # Pivot the dataset
     pivoted_data = data.pivot_table(
-        index=None, 
-        columns="Variable", 
-        values="Units", 
+        index=None,
+        columns="Variable",
+        values="Units",
         aggfunc="first"
     )
 
@@ -42,9 +41,11 @@ try:
     pivoted_data.columns.name = None
     pivoted_data.reset_index(drop=True, inplace=True)
 
-        # Convert numeric ranges to integers for filtering
+    # Convert ranges in the "Units" column to integers (e.g., "1300 - 215245" to 1300)
     for col in ["YearBuilt", "LotArea"]:
-        pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(int)
+        # Ensure the column is treated as a string before splitting
+        pivoted_data[col] = pivoted_data[col].astype(str).str.split(" - ").str[0].astype(int)
+
 except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
     st.stop()
