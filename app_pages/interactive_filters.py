@@ -22,7 +22,6 @@ if not all(var in data["Variable"].values for var in required_variables):
     st.error(f"Missing required rows in the 'Variable' column: {', '.join(missing_vars)}")
     st.stop()
 
-# Pivot the dataset
 try:
     # Ensure no duplicates in "Variable" column
     if data["Variable"].duplicated().any():
@@ -43,8 +42,16 @@ try:
 
     # Convert ranges in the "Units" column to integers (e.g., "1300 - 215245" to 1300)
     for col in ["YearBuilt", "LotArea"]:
-        # Ensure the column is treated as a string before splitting
-        pivoted_data[col] = pivoted_data[col].astype(str).str.split(" - ").str[0].astype(int)
+        # Check if the column exists in the pivoted dataset
+        if col in pivoted_data.columns:
+            # Convert to strings, handle NaN, and split the range
+            pivoted_data[col] = (
+                pivoted_data[col]
+                .fillna("")  # Replace NaN with empty strings
+                .astype(str)  # Ensure all values are treated as strings
+                .str.extract(r"^(\d+)")  # Extract the first number in the range
+                .astype(float)  # Convert to float (or int if preferred)
+            )
 
 except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
