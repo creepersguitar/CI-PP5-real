@@ -67,22 +67,35 @@ numeric_columns = [
 #for col in numeric_columns:
  #   pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(int)
 
-# Apply global filters
 def apply_global_filters(data):
     try:
+        st.write("Data before pivoting:", data.head())
+        st.write("Columns before pivoting:", data.columns)
+
         # Pivot the dataset
         pivoted_data = data.pivot(index=None, columns="Variable", values="Units")
         pivoted_data.columns.name = None  # Remove "Variable" label
         pivoted_data.reset_index(drop=True, inplace=True)
 
-        # Ensure numeric columns are correctly processed
-        numeric_columns = ["YearBuilt", "LotArea"]
-        for col in numeric_columns:
-            if col in pivoted_data.columns:
-                pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(int)
-            else:
-                st.error(f"Missing column: {col}")
-                st.stop()
+        st.write("Pivoted Data:", pivoted_data.head())
+        st.write("Pivoted Columns:", pivoted_data.columns)
+
+        # Check for required columns
+        required_columns = ["YearBuilt", "LotArea"]
+        missing_columns = [col for col in required_columns if col not in pivoted_data.columns]
+        if missing_columns:
+            st.error(f"Missing required columns after pivoting: {missing_columns}")
+            st.stop()
+
+        # Convert numeric columns if necessary
+        for col in required_columns:
+            if pivoted_data[col].dtype == object:  # If column is a string (e.g., "1872 - 2010")
+                st.write(f"Converting {col} from string range to numeric")
+                pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(float)
+
+        # Debug data types
+        for col in required_columns:
+            st.write(f"{col} dtype after conversion:", pivoted_data[col].dtype)
 
         # Apply filters
         year_range = st.sidebar.slider(
@@ -111,6 +124,5 @@ def apply_global_filters(data):
         return filtered_data
 
     except Exception as e:
-        st.error(f"Error in apply_global_filters: {e}")
+        st.error(f"Error in apply_global_filters: {str(e)}")
         st.stop()
-st.write(apply_global_filters)
