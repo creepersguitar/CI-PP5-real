@@ -31,7 +31,7 @@ try:
     pivoted_data = data.pivot(index=None, columns="Variable", values="Units")
     
     # Drop rows with NaN in critical variables
-    pivoted_data = pivoted_data.dropna(subset=required_variables)
+    pivoted_data = pivoted_data.dropna(subset=required_variables).fillna(0)
 except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
     st.stop()
