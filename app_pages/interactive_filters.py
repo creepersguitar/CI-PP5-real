@@ -64,8 +64,8 @@ numeric_columns = [
     "YearBuilt",
     "LotArea"
 ]
-for col in numeric_columns:
-    pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(int)
+#for col in numeric_columns:
+ #   pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(int)
 
 # Apply global filters
 def apply_global_filters(data):
