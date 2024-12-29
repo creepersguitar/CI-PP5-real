@@ -27,7 +27,7 @@ try:
     if data["Variable"].duplicated().any():
         st.warning("Duplicate variables found in the dataset. Removing duplicates...")
         data = data.drop_duplicates(subset=["Variable"], keep="first")
-    
+
     # Pivot the dataset
     pivoted_data = data.pivot_table(
         index=None,
@@ -40,22 +40,24 @@ try:
     pivoted_data.columns.name = None
     pivoted_data.reset_index(drop=True, inplace=True)
 
-    # Convert ranges in the "Units" column to integers (e.g., "1300 - 215245" to 1300)
-    for col in ["YearBuilt", "LotArea"]:
-        # Check if the column exists in the pivoted dataset
-        if col in pivoted_data.columns:
-            # Convert to strings, handle NaN, and split the range
-            pivoted_data[col] = (
-                pivoted_data[col]
-                .fillna("")  # Replace NaN with empty strings
-                .astype(str)  # Ensure all values are treated as strings
-                .str.extract(r"^(\d+)")  # Extract the first number in the range
-                .astype(float)  # Convert to float (or int if preferred)
-            )
-
+    # Process numeric columns
+    for col in pivoted_data.columns:
+        if pivoted_data[col].dtype == "object":
+            try:
+                # Handle range values in the "Units" column (e.g., "1300 - 215245")
+                pivoted_data[col] = (
+                    pivoted_data[col]
+                    .fillna("")  # Replace NaN with empty strings
+                    .astype(str)  # Convert all values to strings
+                    .str.extract(r"^(\d+)")  # Extract the first number in the range
+                    .astype(float)  # Convert to numeric
+                )
+            except Exception as e:
+                st.warning(f"Could not process column {col}: {e}")
 except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
     st.stop()
+
 
 # Convert numeric columns to appropriate data types
 numeric_columns = [
