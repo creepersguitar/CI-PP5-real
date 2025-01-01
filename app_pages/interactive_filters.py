@@ -74,10 +74,13 @@ def apply_global_filters(data):
         st.write("Data before pivoting:", data.head())
         st.write("Columns before pivoting:", data.columns)
 
-        # Pivot the dataset
-        pivoted_data = data.pivot(index=None, columns="Variable", values="Units")
-        pivoted_data.columns.name = None  # Remove "Variable" label
-        pivoted_data.reset_index(drop=True, inplace=True)
+        try:
+            pivoted_data = data.pivot(columns="Variable", values="Units")
+            pivoted_data.columns.name = None  # Remove "Variable" as the columns name
+            pivoted_data.reset_index(drop=True, inplace=True)  # Reset the index if needed
+        except KeyError as e:
+            st.error(f"Error in pivoting dataset: Missing required columns. {e}")
+            st.stop()
 
         st.write("Pivoted Data:", pivoted_data.head())
         st.write("Pivoted Columns:", pivoted_data.columns)
