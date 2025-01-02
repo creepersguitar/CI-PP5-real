@@ -29,10 +29,50 @@ I shall place the fate of this project and whether or not i gain the diploma in 
 
 ## Resubmission details
 2.1 Map business requirements to user stories
+User story 1:
+"As a developer, i want to be able to predict future property prices based on size and location aswell as the demand for properties.
 
-2.2  Evidence a ML task in readme file
+I want to predict future property prices based on location and size,
+So that I can make informed investment decisions.
+I want to predict customer demand for new housing developments,
+So that I can plan construction schedules and budgets efficiently.
+As a data analyst, I want to build and validate a predictive model that estimates house prices accurately, so I can offer data-driven recommendations to stakeholders."
 
-3.1 Suboptimal or missing Data Analysis and Visualization and only one plot is present in the dashboard, which does not meet expectations.
+The Residual Vs Actual price graph in the "Model Performance" page, helps show the prediction accuracy and it ties to the user story of predicting future prices.
+
+### User story 2:
+" As a seller I want to see a pie chart summarizing the property listings in my area,
+So that I can compare my property against competitors.
+be able to see a pie chart to compare properties
+As a potential buyer, I want to predict the sale price of a house based on its features, so that I can budget effectively and make informed purchasing decisions.
+As a homeowner in Ames, Iowa, I want to understand which house features are most important in determining sale prices so that I can prioritize renovations to increase the value of my property."
+
+User story 2 is linked via the bar chart which shows the distribution of sale prices from my dataset.
+
+### User Story 3:
+"As a Data Analyst I can see a heatmap so that i can see correlations between different properties and prices
+
+I want to display a heatmap of correlations between property features and prices,
+So that I can identify which features impact pricing the most.
+As a data analyst, I want to build and validate a predictive model that estimates house prices accurately, so I can offer data-driven recommendations to stakeholders."
+
+There is a line graph which would show some correlations between the features and prices as well as the trend analysis page which make use of simulated data which can help for user story 3.
+### User Story 4:
+"As an estate agent I can see a bar chart so that i can see different prices of properties
+
+I want to view a bar chart showing prices across different properties,
+So that I can identify areas with the highest demand.
+As a real estate agent, I want to identify trends in house pricing across different neighborhoods in Ames, Iowa, so that I can provide accurate market insights to my clients."
+
+User story 4 is linked to via the bar chart as it shows the distribution of the sale prices taken from my dataset.
+
+## 2.2  Evidence a ML task in readme file
+### Referencing ML Tasks
+The ML task of predicting house prices, as outlined in two of the user stories, helps to visualize the distribution of sale prices. Additionally, analyzing trends over time allows for more accurate predictions about future property values, supporting long-term decision-making.
+
+### Rationale
+The model empowers the client to make better decisions by providing price predictions, highlighting the price range, and showing price distribution based on property conditions. By incorporating simulated data, the client can also track trends over time. This approach also offers flexibility to expand the dataset in the future, whether for longer periods or broader geographical areas.
+## 3.1 Suboptimal or missing Data Analysis and Visualization and only one plot is present in the dashboard, which does not meet expectations.
 - i have a bar chart which is clear and informative which provides a breakdown of data points.
 - i have a line graph is functional and fully interpretable.
 - i have a scatter graph which is too functional and interpretable
