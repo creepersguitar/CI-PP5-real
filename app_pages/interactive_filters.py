@@ -6,7 +6,7 @@ import traceback
 try:
     data = pd.read_csv('assets/AmesHousing.csv')
 except FileNotFoundError:
-    st.error("Dataset not found. Please ensure 'AmesHousing.csv' is in the 'assets' folder.")
+    st.error("Dataset not found. Ensure 'AmesHousing.csv' is in the 'assets' folder.")
     st.stop()
 
 # Validate dataset structure
@@ -15,21 +15,20 @@ required_variables = ["YearBuilt", "LotArea"]
 
 if not all(col in data.columns for col in required_columns):
     missing_cols = [col for col in required_columns if col not in data.columns]
-    st.error(f"The dataset must contain the following columns: {', '.join(missing_cols)}")
+    st.error(f"Missing columns: {', '.join(missing_cols)}")
     st.stop()
 
 if not all(var in data["Variable"].values for var in required_variables):
     missing_vars = [var for var in required_variables if var not in data["Variable"].values]
-    st.error(f"Missing required rows in the 'Variable' column: {', '.join(missing_vars)}")
+    st.error(f"Missing rows in 'Variable' column: {', '.join(missing_vars)}")
     st.stop()
 
+# Clean and pivot the dataset
 try:
-    # Ensure no duplicates in "Variable" column
     if data["Variable"].duplicated().any():
-        st.warning("Duplicate variables found in the dataset. Removing duplicates...")
+        st.warning("Duplicate variables found. Removing duplicates...")
         data = data.drop_duplicates(subset=["Variable"], keep="first")
 
-    # Pivot the dataset
     pivoted_data = data.pivot_table(
         index=None,
         columns="Variable",
@@ -37,7 +36,6 @@ try:
         aggfunc="first"
     )
 
-    # Clean up the pivoted DataFrame
     pivoted_data.columns.name = None
     pivoted_data.reset_index(drop=True, inplace=True)
 
@@ -45,13 +43,12 @@ try:
     for col in pivoted_data.columns:
         if pivoted_data[col].dtype == "object":
             try:
-                # Handle range values in the "Units" column (e.g., "1300 - 215245")
                 pivoted_data[col] = (
                     pivoted_data[col]
-                    .fillna("")  # Replace NaN with empty strings
-                    .astype(str)  # Convert all values to strings
-                    .str.extract(r"^(\d+)")  # Extract the first number in the range
-                    .astype(float)  # Convert to numeric
+                    .fillna("")  
+                    .astype(str)
+                    .str.extract(r"^(\d+)")
+                    .astype(float)
                 )
             except Exception as e:
                 st.warning(f"Could not process column {col}: {e}")
@@ -59,45 +56,30 @@ except Exception as e:
     st.error(f"Error pivoting dataset: {e}")
     st.stop()
 
-
-# Convert numeric columns to appropriate data types
-numeric_columns = [
-    "YearBuilt",
-    "LotArea"
-]
-#for col in numeric_columns:
- #   pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(int)
-
 def apply_global_filters(data):
     try:
-        # Debug: Display initial dataset
         st.write("Data before pivoting:", data.head())
-        st.write("Columns before pivoting:", data.columns)
 
         try:
             pivoted_data = data.pivot(columns="Variable", values="Units")
-            pivoted_data.columns.name = None  # Remove "Variable" as the columns name
-            pivoted_data.reset_index(drop=True, inplace=True)  # Reset the index if needed
+            pivoted_data.columns.name = None
+            pivoted_data.reset_index(drop=True, inplace=True)
         except KeyError as e:
             st.error(f"Error in pivoting dataset: Missing required columns. {e}")
             st.stop()
 
         st.write("Pivoted Data:", pivoted_data.head())
-        st.write("Pivoted Columns:", pivoted_data.columns)
 
-        # Check for required columns
         required_columns = ["YearBuilt", "LotArea"]
         missing_columns = [col for col in required_columns if col not in pivoted_data.columns]
         if missing_columns:
-            raise KeyError(f"Missing required columns after pivoting: {missing_columns}")
+            raise KeyError(f"Missing columns: {missing_columns}")
 
-        # Convert numeric columns if necessary
         for col in required_columns:
-            if pivoted_data[col].dtype == object:  # If column is a string (e.g., "1872 - 2010")
+            if pivoted_data[col].dtype == object:
                 st.write(f"Converting {col} from string range to numeric")
                 pivoted_data[col] = pivoted_data[col].str.split(" - ").str[0].astype(float)
 
-        # Debug data types
         for col in required_columns:
             st.write(f"{col} dtype after conversion:", pivoted_data[col].dtype)
 
@@ -129,5 +111,5 @@ def apply_global_filters(data):
 
     except Exception as e:
         st.error(f"Error in apply_global_filters: {e}")
-        st.write(traceback.format_exc())  # Log the full traceback for debugging
+        st.write(traceback.format_exc())
         st.stop()
