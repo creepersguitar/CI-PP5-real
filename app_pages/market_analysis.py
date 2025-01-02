@@ -47,9 +47,17 @@ def display_market_analysis(data):
 
     # Visualize the data
     st.bar_chart(avg_price_by_condition.set_index("OverallCond"))
-    column = st.selectbox("Select Column for Outlier Detection", data.select_dtypes(include="number").columns)
-    outliers = detect_outliers(data, column)
-    st.write(outliers)
+    # Selecting only numeric columns for outlier detection
+    numeric_columns = data.select_dtypes(include=["number"]).columns
+
+    # Allow user to select a numeric column for outlier detection
+    column = st.selectbox("Select Column for Outlier Detection", numeric_columns)
+
+    if column:
+        outliers = detect_outliers(data, column)
+        st.write(outliers)
+    else:
+        st.error("Please select a valid numeric column.")
 
 def detect_outliers(data, column, z_threshold=3):
     # Check if the column exists in the data
