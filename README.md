@@ -1,5 +1,11 @@
 # Heritige Housing
 Welcome to Heritige Housing, this project is to help a good friend with analysing homes in Ames Iowa.
+
+# Notice
+Please note that i have not had enough time to visibly make enough changes in this final resubmission due to personal events, it being christmas and new years aswell as me working on the day of submission (3/01/2025) and my mental health going from being calm to shaken up and nearly in tears.
+
+I shall place the fate of this project and whether or not i gain the diploma in the assessment teams care.
+
 # Contents
 1. [Design](#design)
 2. [User Stories](#user-stories)
@@ -20,6 +26,40 @@ Welcome to Heritige Housing, this project is to help a good friend with analysin
 
 ## Note
  **Please Note that i am not happy with what i have done for this project and given more time and focus, i would make sure to fully test the application but due to a couple of personal commitments and family/mental health issues, the application isn't 100% complete its more like 85% complete.**
+
+## Resubmission details
+2.1 Map business requirements to user stories
+
+2.2  Evidence a ML task in readme file
+
+3.1 Suboptimal or missing Data Analysis and Visualization and only one plot is present in the dashboard, which does not meet expectations.
+- i have a bar chart which is clear and informative which provides a breakdown of data points.
+- i have a line graph is functional and fully interpretable.
+- i have a scatter graph which is too functional and interpretable
+please see the subsection below to see how they link to user stories.
+### Data Visualization Tasks
+Bar Chart
+Description: The bar chart compares the average sale prices of properties across different neighborhoods.
+Linked User Stories:
+
+"As a prospective buyer, I want to compare the average sale prices of properties by neighborhood so that I can identify affordable areas."
+"As a real estate agent, I want to see how property sizes vary by neighborhood to recommend properties to clients."
+Rationale: This visualization allows users to quickly compare property prices or sizes across neighborhoods, helping buyers identify suitable areas and agents provide better recommendations.
+Line Graph
+Description: The line graph displays property price trends over time, such as average sale price per year.
+Linked User Stories:
+
+"As an investor, I want to analyze property price trends over the past decade so that I can identify lucrative opportunities."
+"As a user, I want to see how property sales change seasonally to determine the best time to buy."
+Rationale: This visualization highlights price trends, helping investors spot profitable opportunities and users decide on the ideal time to buy properties.
+Scatter Plot
+Description: The scatter plot explores the relationship between lot size and sale price.
+Linked User Stories:
+
+"As a buyer, I want to understand the relationship between lot size and sale price so that I can identify good deals."
+"As a developer, I want to see how property age correlates with sale price to decide on renovation projects."
+Rationale: This visualization shows correlations, aiding buyers in assessing value and developers in identifying potential renovation targets.
+
 ## Design
 
 The design of this project follows a structured approach that aligns with the CRISP-DM framework (Cross-Industry Standard Process for Data Mining). It ensures that the solution is tailored to the business requirements and supports user goals through data analysis, visualization, and predictive modeling.
