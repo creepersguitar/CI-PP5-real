@@ -52,15 +52,23 @@ def display_market_analysis(data):
     st.write(outliers)
 
 def detect_outliers(data, column, z_threshold=3):
-    # Calculate Z-scores
+    # Check if the column exists in the data
+    if column not in data.columns:
+        raise ValueError(f"The column '{column}' does not exist in the dataset.")
+    
+    # Calculate Z-scores for the specified column
     data["Z-Score"] = (data[column] - data[column].mean()) / data[column].std()
+    
+    # Detect outliers based on Z-score threshold
     outliers = data[np.abs(data["Z-Score"]) > z_threshold]
-
-    # Plot the outliers
+    
+    # Plot the outliers with Plotly
     fig = px.scatter(data, x=column, y="Z-Score", color=np.abs(data["Z-Score"]) > z_threshold,
                      title=f"Outliers in {column}",
                      labels={"color": "Outlier"})
     st.plotly_chart(fig)
-
+    
+    # Display the number of outliers detected
     st.write(f"Number of Outliers in {column}: {len(outliers)}")
+    
     return outliers
